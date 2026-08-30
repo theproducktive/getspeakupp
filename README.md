@@ -1,262 +1,34 @@
-# Orador
+# SpeakUpp
 
-> AI-powered speaking practice for **English, French, and Arabic**. Pick a topic, think for 3 minutes, speak for 1, and get instant AI feedback on grammar, vocabulary, fluency, and pronunciation.
-
-🌐 **Live:** [orador.lovable.app](https://orador.lovable.app)
-
-![Orador landing page](docs/screenshots/landing.png)
-
----
-
-## Table of contents
-
-1. [What it does](#what-it-does)
-2. [Screenshots](#screenshots)
-3. [Tech stack](#tech-stack)
-4. [Architecture](#architecture)
-5. [Frontend](#frontend)
-6. [UI components](#ui-components)
-7. [Backend (server functions)](#backend-server-functions)
-8. [Library helpers](#library-helpers)
-9. [Database](#database)
-10. [Authentication & security](#authentication--security)
-11. [Observability & quotas](#observability--quotas)
-12. [Payments](#payments)
-13. [AI pipeline](#ai-pipeline)
-14. [Storage](#storage)
-15. [Internationalisation (i18n)](#internationalisation-i18n)
-16. [Design system](#design-system)
-17. [SEO](#seo)
-18. [Testing](#testing)
-19. [Project structure](#project-structure)
-20. [Environment variables](#environment-variables)
-21. [Local development](#local-development)
-22. [Deployment](#deployment)
-
----
+AI-powered speaking practice platform for English, French, and Arabic.
 
 ## What it does
 
-Orador turns the well-known **4-3-2 deliberate-practice speaking method** into a daily ritual:
-
-1. **Pick a language and your interests** — English, French, or Arabic, plus topics you actually care about (travel, tech, food, music…).
-2. **Get a personalised topic** — the AI generates a fresh prompt at your CEFR level (A1 → C2).
-3. **Think for 3 minutes, speak for 1** — record straight from the browser.
-4. **Receive structured AI feedback** — grammar, vocabulary, fluency, pronunciation, and an overall summary, with progress tracked over time.
-
-A free tier lets users try a handful of sessions; **lifetime access** is unlocked through PayPal with locale-aware pricing.
-
----
-
-## Screenshots
-
-| Landing | Sign in | Upgrade |
-| --- | --- | --- |
-| ![Landing](docs/screenshots/landing.png) | ![Login](docs/screenshots/login.png) | ![Upgrade](docs/screenshots/upgrade.png) |
-
----
+- **Personalized prompts**: Get CEFR-level speaking topics based on your interests
+- **Deliberate practice**: Think for 3 minutes, speak for 1 minute
+- **Instant AI feedback**: Real-time analysis on grammar, vocabulary, fluency, and pronunciation
+- **Track progress**: Dashboard with stats, streaks, and session history
+- **Free tier**: 15 sessions to get started
 
 ## Tech stack
 
-| Layer | Choice |
-| --- | --- |
-| Framework | **TanStack Start v1** (React 19 + Vite 7, file-based routing, server functions) |
-| Language | TypeScript (strict) |
-| Styling | **Tailwind CSS v4** with `oklch` design tokens in `src/styles.css` |
-| UI primitives | **shadcn/ui** + Radix UI |
-| Icons | lucide-react |
-| Forms | react-hook-form + zod |
-| Data fetching | @tanstack/react-query |
-| Backend runtime | Cloudflare Workers (via `@cloudflare/vite-plugin`, `wrangler.jsonc`) |
-| Database & Auth | **Supabase** — Postgres + RLS + Auth + Storage |
-| AI gateway | **Managed AI Gateway** — Google Gemini 2.5 Flash for text and audio understanding |
-| Speech-to-text | ElevenLabs Scribe (audio path) + Gemini fallback |
-| Payments | **PayPal** (REST API, server-verified webhook) |
-| Analytics-friendly | SSR + sitemap.xml + JSON-LD |
+- Frontend: TanStack Start, React 19, Tailwind CSS
+- Backend: Supabase, Cloudflare Workers
+- AI: Google Gemini 2.5 Flash, ElevenLabs Scribe
+- Payments: PayPal
 
----
+## Local development
 
-## Architecture
-
-```
-┌──────────────────────────────┐        ┌─────────────────────────────────┐
-│  React 19 / TanStack Router  │  RPC   │  TanStack server functions      │
-│  (browser, SSR via Vite)     │ ─────▶ │  createServerFn(...) on Workers │
-└──────────────────────────────┘        └────────────┬────────────────────┘
-                                                     │
-                          ┌──────────────────────────┼──────────────────────────┐
-                          ▼                          ▼                          ▼
-                  ┌───────────────┐         ┌───────────────┐         ┌──────────────────┐
-                  │ Supabase      │         │ AI Gateway    │         │ PayPal REST API  │
-                  │ Postgres+RLS  │         │ Gemini 2.5    │         │ (orders + caps)  │
-                  │ Auth, Storage │         │ ElevenLabs    │         │ + webhook verify │
-                  └───────────────┘         └───────────────┘         └──────────────────┘
+```bash
+npm install
+npm run dev
 ```
 
-- **All app-internal server logic** lives in `src/server/*.functions.ts` using `createServerFn` — no Supabase Edge Functions are used for app logic.
-- **Webhooks** (PayPal) are exposed under `src/routes/api/public/*` so the path bypasses auth on published deploys; the handler verifies the signature itself.
-- The browser **never** sees the service role key or any third-party secret — only the publishable Supabase key.
+Open http://localhost:3000
 
----
+## Privacy
 
-## Frontend
-
-File-based routing under `src/routes/`:
-
-| Route | Purpose |
-| --- | --- |
-| `/` | Landing page (hero, "How it works", language pills, JSON-LD) |
-| `/signup`, `/login` | Email/password authentication |
-| `/onboarding` | Pick target language, level, weekly goal, interests |
-| `/practice` | Configure & start a 4-3-2 speaking session |
-| `/session/$id` | Live timer → recording → submission → feedback |
-| `/dashboard` | Personal stats, recent sessions, streaks |
-| `/history` | Full session history with feedback drill-down |
-| `/rankings` | Per-language leaderboard |
-| `/account` | Profile, language, theme, sign-out |
-| `/upgrade` | Locale-aware lifetime pricing + PayPal checkout |
-| `/admin` | Admin dashboard (role-gated) |
-| `/sitemap.xml` | Generated sitemap (server route) |
-| `/api/public/paypal-webhook` | PayPal webhook receiver |
-
-The **root layout** (`src/routes/__root.tsx`) wires:
-
-- `AuthProvider` — Supabase session subscription, cache invalidation on auth change.
-- `I18nProvider` — language + RTL handling.
-- `Toaster` (sonner) — global notifications.
-- `<HeadContent />` — per-route SEO meta and JSON-LD.
-
----
-
-## UI components
-
-App-specific components live in `src/components/`:
-
-| Component | Purpose |
-| --- | --- |
-| `app-header.tsx` | Top navigation bar with logo, language switcher, account menu and admin link |
-| `logo.tsx` | Brand wordmark + icon, reused in header, auth pages and favicon export |
-
-The full **shadcn/ui** primitive set is in `src/components/ui/` — each restyled to the Orador palette via semantic tokens (never hard-coded hex):
-
-| Category | Components |
-| --- | --- |
-| Layout | `card`, `separator`, `aspect-ratio`, `resizable`, `scroll-area`, `sheet`, `sidebar`, `skeleton` |
-| Forms | `form`, `input`, `textarea`, `label`, `checkbox`, `radio-group`, `switch`, `select`, `slider`, `input-otp`, `toggle`, `toggle-group` |
-| Buttons & badges | `button`, `badge`, `avatar` |
-| Overlays | `dialog`, `alert-dialog`, `drawer`, `popover`, `hover-card`, `tooltip`, `sonner` (toasts) |
-| Navigation | `breadcrumb`, `navigation-menu`, `menubar`, `pagination`, `tabs`, `dropdown-menu`, `context-menu`, `command` |
-| Data display | `table`, `chart`, `progress`, `accordion`, `collapsible`, `calendar`, `alert`, `carousel` |
-
-Hooks in `src/hooks/`:
-
-- `use-mobile.tsx` — media-query helper used by responsive layouts and the sidebar primitive.
-
----
-
-## Backend (server functions)
-
-All endpoints live in `src/server/`. Each file is either a `*.functions.ts` (RPC handlers callable from React) or a `*.server.ts` (server-only helpers, never bundled to the browser).
-
-| File | What it does |
-| --- | --- |
-| `account.functions.ts` | Read/update profile, change UI language, delete account |
-| `admin.functions.ts` | Admin-only listing, role management, audit log writes (gated by sole-admin email + DB role check) |
-| `analyze.functions.ts` | Download recording → Gemini transcription → Gemini structured feedback → persist `feedback`; writes score via `supabaseAdmin` so RLS blocks user tampering |
-| `dashboard.functions.ts` | Aggregate sessions, scores and streaks for the dashboard |
-| `history.functions.ts` | Auth-gated session history list (replaces a former direct client query) |
-| `onboarding.functions.ts` | Save user preferences (language, level, weekly goal, interests) |
-| `rankings.functions.ts` | Per-language leaderboard from aggregated session scores |
-| `session.functions.ts` | Create a session, store the audio path, mark status |
-| `topic.functions.ts` | Generate a CEFR-level topic via Gemini, cached in `topic_cache` to cut cost & latency |
-| `paypal.functions.ts` | Create order, capture order, fetch user status, locale pricing |
-| `paypal-config.functions.ts` | Expose only the safe PayPal client config (publishable client-id) to the browser |
-| `paypal.server.ts` | Server-only PayPal helpers: country lookup, currency mapping, REST calls, masked error logging |
-| `quota.server.ts` | `assertWithinFreeQuota` — server-side freemium cap to stop AI-credit drain via direct RPC |
-| `observability.server.ts` | Structured server logging + error capture used across server fns |
-| `auth-client-middleware.ts` | Attaches the Supabase bearer token to every server-fn RPC from the browser |
-
-**Pattern used everywhere**:
-
-```ts
-export const generateTopic = createServerFn({ method: "POST" })
-  .middleware([attachSupabaseAuth, requireSupabaseAuth])
-  .inputValidator((data) => InputSchema.parse(data))   // Zod validation
-  .handler(async ({ data, context }) => { /* ... */ });
-```
-
-Inputs are validated with **Zod** with min/max bounds and regex constraints to reduce attack surface.
-
----
-
-## Library helpers
-
-Shared client + server utilities in `src/lib/`:
-
-| File | Purpose |
-| --- | --- |
-| `auth-context.tsx` | React context that subscribes to `supabase.auth.onAuthStateChange`, exposes `user`/`session`, and triggers router + query-cache invalidation on sign-in/out |
-| `i18n.tsx` | EN/FR/AR dictionary + `<html lang>` / `<html dir>` (RTL) wiring |
-| `interests.ts` | Curated, localised interests list used by onboarding & topic generation |
-| `topic-cache.ts` | Deterministic interests hash + cache constants used by `generateTopic` |
-| `observability.ts` | Client-side Sentry + PostHog wiring, `identifyUser`, funnel-event helpers |
-| `utils.ts` | `cn()` (clsx + tailwind-merge) and other tiny helpers |
-
----
-
-## Database
-
-10 tables in the `public` schema, all with **Row Level Security enabled**:
-
-| Table | Purpose |
-| --- | --- |
-| `profiles` | User-facing profile (display name, native lang, UI lang, theme) |
-| `user_preferences` | Target language, CEFR level, weekly goal, interests |
-| `user_roles` | App-role assignment (`user`, `admin`) — separate table to prevent privilege escalation |
-| `levels` | CEFR levels A1–C2, localised names |
-| `topics` | Pool of speaking prompts per language/level (admin-curated + AI-generated) |
-| `sessions` | One speaking session: language, level, topic, audio path, transcript, score, status |
-| `feedback` | Structured AI output: grammar, vocabulary, fluency notes, pronunciation notes, overall summary, raw JSON |
-| `subscriptions` | Lifetime access records, currency-aware (`amount_minor` + `currency`), tied to PayPal order/capture IDs |
-| `payment_requests` | Manual payment proofs (legacy MAD bank-transfer flow), admin-reviewable |
-| `admin_audit_log` | Append-only log of admin actions (who did what, when, on whom) |
-| `topic_cache` | Server-only cache of generated speaking prompts, keyed by `(lang, level, interests_hash)` |
-| `rankings` (view) | Aggregated per-language leaderboard |
-
-### Database functions
-
-Security-definer helpers in Postgres:
-
-- `has_role(_user_id uuid, _role app_role) → boolean` — used inside RLS policies, prevents recursive checks.
-- `has_active_subscription(_user_id uuid) → boolean`
-- `handle_new_user()` (trigger on `auth.users`) — creates profile + default `user` role, plus the sole admin if the email matches the configured owner.
-- `enforce_sole_admin_email()` — trigger on `user_roles` that **rejects** any attempt to grant `admin` to anyone other than the configured owner email.
-- `touch_updated_at()` — generic `updated_at` trigger.
-
----
-
-## Authentication & security
-
-- **Supabase Auth** with email + password (via the standard browser client).
-- Sessions are persisted in `localStorage` and re-validated on every server-fn call by `requireSupabaseAuth` middleware.
-- The browser-side `attachSupabaseAuth` middleware reads `supabase.auth.getSession()` and attaches `Authorization: Bearer <token>` to every RPC.
-- **RLS is on for every table** with 21 policies. Examples:
-  - `sessions_self_all` — users can only read/write their own sessions (`user_id = auth.uid()`).
-  - `feedback_self_select / feedback_self_insert` — users can only see/insert their own feedback.
-  - `topics_public_read` + `topics_admin_write` — topics are world-readable but only admins can edit.
-  - `user_roles_admin_all` — only admins may modify roles; combined with the `enforce_sole_admin_email` trigger this makes admin promotion impossible from the app.
-  - `subs_admin_all` + `pr_admin_update` — only admins can modify subscriptions / approve manual payment requests.
-- **Roles live in their own `user_roles` table**, never on `profiles` — eliminates a whole class of privilege-escalation bugs.
-- All server functions validate input with **Zod** (length limits, regex, enums).
-- The PayPal webhook route verifies PayPal's `transmission_*` headers against the configured webhook ID before touching the database.
-- The service role key is **only** imported by `src/integrations/supabase/client.server.ts` from server code — never bundled into the browser.
-- 404 and error boundaries are wired at the router level (`DefaultErrorComponent` + `NotFoundComponent`).
-- **HTTP security headers** are set globally in `src/start.ts`: `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy: microphone=(self)`, `Strict-Transport-Security`.
-- Leaked-password protection (HIBP) is enabled in Supabase Auth.
-
----
-
-## Observability & quotas
+This is a private repository.
 
 - **Client telemetry** (`src/lib/observability.ts`) — Sentry for error capture, PostHog for funnel events (`signup_completed`, `practice_topic_generated`, `session_analyzed`, …) with `identifyUser` on sign-in.
 - **Server telemetry** (`src/server/observability.server.ts`) — structured logs and `captureServerException` used by every server fn that hits an external API; AI gateway and PayPal errors are logged in detail server-side but returned to the browser as generic messages.
