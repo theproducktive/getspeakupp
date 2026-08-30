@@ -1,0 +1,15 @@
+# SpeakUpp
+
+> AI-powered speaking practice for English, French, and Arabic. Pick a topic, think for 3 minutes, speak for 1, and get instant feedback on pronunciation, fluency, grammar, and vocabulary.
+
+SpeakUpp helps language learners build real speaking fluency through short, focused sessions with AI feedback and progress tracking.
+
+## Pages
+
+- [Home](/): Landing page with how-it-works overview and supported languages.
+- [Sign up](/signup): Create an SpeakUpp account.
+- [Sign in](/login): Sign in to an existing account.
+
+## Optional
+
+- [Upgrade](/upgrade): One-time lifetime access pricing.

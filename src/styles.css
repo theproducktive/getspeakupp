@@ -1,0 +1,197 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* SpeakUpp — warm, encouraging design system. All tokens in oklch. */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+
+  --color-peach: var(--peach);
+  --color-terracotta: var(--terracotta);
+  --color-sage: var(--sage);
+  --color-ink: var(--ink);
+  --color-ink-light: var(--ink-light);
+  --color-sunlight: var(--sunlight);
+
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+
+  --shadow-soft: 0 4px 20px oklch(0.78 0.08 40 / 0.35);
+  --shadow-elevated: 0 20px 40px -15px oklch(0.4 0.05 40 / 0.18);
+}
+
+:root {
+  --radius: 1rem;
+
+  /* Brand palette */
+  --sunlight: oklch(0.985 0.012 80);
+  --peach: oklch(0.88 0.07 35);
+  --terracotta: oklch(0.68 0.11 35);
+  --sage: oklch(0.93 0.025 130);
+  --ink: oklch(0.32 0.025 50);
+  --ink-light: oklch(0.55 0.022 50);
+
+  --background: var(--sunlight);
+  --foreground: var(--ink);
+
+  --card: oklch(1 0 0);
+  --card-foreground: var(--ink);
+  --popover: oklch(1 0 0);
+  --popover-foreground: var(--ink);
+
+  --primary: var(--ink);
+  --primary-foreground: var(--sunlight);
+
+  --secondary: var(--sage);
+  --secondary-foreground: var(--ink);
+
+  --muted: oklch(0.96 0.01 60);
+  --muted-foreground: var(--ink-light);
+
+  --accent: var(--peach);
+  --accent-foreground: var(--ink);
+
+  --destructive: oklch(0.6 0.2 28);
+  --destructive-foreground: oklch(0.99 0 0);
+
+  --border: oklch(0.9 0.012 60);
+  --input: oklch(0.92 0.012 60);
+  --ring: var(--terracotta);
+
+  --chart-1: var(--terracotta);
+  --chart-2: oklch(0.7 0.08 130);
+  --chart-3: var(--peach);
+  --chart-4: oklch(0.55 0.06 250);
+  --chart-5: oklch(0.7 0.1 80);
+
+  --sidebar: var(--sunlight);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--ink);
+  --sidebar-primary-foreground: var(--sunlight);
+  --sidebar-accent: var(--sage);
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: oklch(0.9 0.012 60);
+  --sidebar-ring: var(--terracotta);
+}
+
+.dark {
+  --sunlight: oklch(0.18 0.015 50);
+  --peach: oklch(0.7 0.09 35);
+  --terracotta: oklch(0.65 0.12 35);
+  --sage: oklch(0.3 0.02 130);
+  --ink: oklch(0.96 0.01 60);
+  --ink-light: oklch(0.7 0.015 60);
+
+  --background: var(--sunlight);
+  --foreground: var(--ink);
+  --card: oklch(0.22 0.018 50);
+  --card-foreground: var(--ink);
+  --popover: oklch(0.22 0.018 50);
+  --popover-foreground: var(--ink);
+  --primary: var(--peach);
+  --primary-foreground: oklch(0.2 0.02 50);
+  --secondary: oklch(0.28 0.02 50);
+  --secondary-foreground: var(--ink);
+  --muted: oklch(0.26 0.018 50);
+  --muted-foreground: var(--ink-light);
+  --accent: var(--terracotta);
+  --accent-foreground: var(--ink);
+  --destructive: oklch(0.65 0.2 28);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: var(--terracotta);
+
+  --sidebar: oklch(0.2 0.015 50);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--peach);
+  --sidebar-primary-foreground: oklch(0.2 0.02 50);
+  --sidebar-accent: oklch(0.28 0.02 50);
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: var(--terracotta);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html, body, #root {
+    min-height: 100%;
+    min-height: 100dvh;
+    width: 100%;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    /* Avoid iOS auto text inflation in landscape */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-feature-settings: "ss01", "cv11";
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+    /* Respect device safe areas (notches, home indicators) */
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  img, svg, video { max-width: 100%; height: auto; }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  /* RTL support */
+  [dir="rtl"] {
+    text-align: right;
+  }
+}
+
+@layer utilities {
+  .bg-ambient {
+    background-image:
+      radial-gradient(circle at 80% 10%, var(--peach) 0%, transparent 40%),
+      radial-gradient(circle at 20% 90%, var(--sage) 0%, transparent 40%);
+    background-color: var(--sunlight);
+  }
+}

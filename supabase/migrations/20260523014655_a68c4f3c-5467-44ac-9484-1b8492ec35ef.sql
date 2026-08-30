@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS topic_cache_authenticated_read ON public.topic_cache;
