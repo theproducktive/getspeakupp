@@ -1,34 +1,6 @@
 # SpeakUpp
 
-AI-powered speaking practice platform for English, French, and Arabic.
-
-## What it does
-
-- **Personalized prompts**: Get CEFR-level speaking topics based on your interests
-- **Deliberate practice**: Think for 3 minutes, speak for 1 minute
-- **Instant AI feedback**: Real-time analysis on grammar, vocabulary, fluency, and pronunciation
-- **Track progress**: Dashboard with stats, streaks, and session history
-- **Free tier**: 15 sessions to get started
-
-## Tech stack
-
-- Frontend: TanStack Start, React 19, Tailwind CSS
-- Backend: Supabase, Cloudflare Workers
-- AI: Google Gemini 2.5 Flash, ElevenLabs Scribe
-- Payments: PayPal
-
-## Local development
-
-```bash
-npm install
-npm run dev
-```
-
-Open http://localhost:3000
-
-## Privacy
-
-This is a private repository.
+AI-powered speaking practice platform for English, French, and Arabic. Users receive personalized CEFR-level prompts, practice deliberate speaking (think 3 minutes, speak 1 minute), and get instant AI feedback on grammar, vocabulary, fluency, and pronunciation.
 
 - **Client telemetry** (`src/lib/observability.ts`) — Sentry for error capture, PostHog for funnel events (`signup_completed`, `practice_topic_generated`, `session_analyzed`, …) with `identifyUser` on sign-in.
 - **Server telemetry** (`src/server/observability.server.ts`) — structured logs and `captureServerException` used by every server fn that hits an external API; AI gateway and PayPal errors are logged in detail server-side but returned to the browser as generic messages.
