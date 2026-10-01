@@ -4,6 +4,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.backend";
 import { getPaypalBase, getPaypalToken } from "@/backend/paypal.backend";
+import { isMonetizationEnabled } from "@/lib/monetization";
 
 // -----------------------------------------------------------------------------
 // Webhook Signature Verification
@@ -63,6 +64,11 @@ export const Route = createFileRoute("/api/public/paypal-webhook")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        if (!isMonetizationEnabled()) {
+          console.log("[PayPal Webhook] Monetization is disabled; acknowledging event without processing");
+          return new Response("Monetization disabled", { status: 200 });
+        }
+
         const rawBody = await request.text();
 
         const valid = await verifyPaypalSignature(request, rawBody);

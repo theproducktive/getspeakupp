@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { isMonetizationEnabled } from "@/lib/monetization";
 
 const BASE_URL = "https://orador.lovable.app";
 
@@ -16,7 +17,9 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/", changefreq: "weekly", priority: "1.0" },
           { path: "/login", changefreq: "monthly", priority: "0.5" },
           { path: "/signup", changefreq: "monthly", priority: "0.7" },
-          { path: "/upgrade", changefreq: "monthly", priority: "0.6" },
+          ...(isMonetizationEnabled()
+            ? [{ path: "/upgrade", changefreq: "monthly" as const, priority: "0.6" }]
+            : []),
         ];
 
         const urls = entries.map((e) =>

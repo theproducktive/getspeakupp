@@ -15,6 +15,7 @@ import {
   paypalCreateOrder,
   SUPPORTED_CURRENCIES,
 } from "@/backend/paypal.backend";
+import { isMonetizationEnabled } from "@/lib/monetization";
 
 // -----------------------------------------------------------------------------
 // Local Price Detection
@@ -25,6 +26,16 @@ export const getLocalPrice = createServerFn({ method: "POST" })
     z.object({ currencyOverride: z.string().length(3).optional() }).parse(data)
   )
   .handler(async ({ data }) => {
+    if (!isMonetizationEnabled()) {
+      return {
+        currency: "USD",
+        amount: 0,
+        amountMinor: 0,
+        display: "$0.00",
+        country: null,
+        supported: SUPPORTED_CURRENCIES,
+      };
+    }
     let currency = data.currencyOverride;
     let country: string | null = null;
     if (!currency) {
@@ -52,13 +63,18 @@ export const getUserStatus = createServerFn({ method: "POST" })
       .from("sessions")
       .select("id", { count: "exact", head: true })
       .eq("user_id", userId);
+
+    if (!isMonetizationEnabled()) {
+      return { sessionCount: count ?? 0, hasActive: false, monetizationEnabled: false };
+    }
+
     const { data: subs } = await supabaseAdmin
       .from("subscriptions")
       .select("status")
       .eq("user_id", userId)
       .eq("status", "active")
       .limit(1);
-    return { sessionCount: count ?? 0, hasActive: (subs?.length ?? 0) > 0 };
+    return { sessionCount: count ?? 0, hasActive: (subs?.length ?? 0) > 0, monetizationEnabled: true };
   });
 
 // -----------------------------------------------------------------------------
@@ -70,6 +86,9 @@ export const createPaypalOrder = createServerFn({ method: "POST" })
     z.object({ currency: z.string().length(3) }).parse(data)
   )
   .handler(async ({ data, context }) => {
+    if (!isMonetizationEnabled()) {
+      throw new Error("Monetization is currently disabled.");
+    }
     console.log("[PayPal] createPaypalOrder called", { userId: context.userId, currency: data.currency });
     const cur = SUPPORTED_CURRENCIES.includes(data.currency) ? data.currency : "USD";
     const price = await computeLocalPrice(cur);
@@ -103,6 +122,9 @@ export const capturePaypalOrder = createServerFn({ method: "POST" })
     z.object({ orderId: z.string().min(5).max(64) }).parse(data)
   )
   .handler(async ({ data, context }) => {
+    if (!isMonetizationEnabled()) {
+      throw new Error("Monetization is currently disabled.");
+    }
     const { userId } = context;
 
     // Ownership check: the orderId must have been created by this same user.

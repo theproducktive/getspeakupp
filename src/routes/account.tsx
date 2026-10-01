@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth-context";
 import { getMySubscription } from "@/functions/account.functions";
 import { Crown, Settings2, ArrowRight } from "lucide-react";
 import { AppHeader } from "@/components/app-header";
+import { isMonetizationEnabled } from "@/lib/monetization";
 
 // -----------------------------------------------------------------------------
 // Route Configuration
@@ -17,13 +18,16 @@ export const Route = createFileRoute("/account")({
       { title: "Account — SpeakUpp" },
       {
         name: "description",
-        content:
-          "View your SpeakUpp subscription status, payment receipt, and manage your speaking practice preferences.",
+        content: isMonetizationEnabled()
+          ? "View your SpeakUpp subscription status, payment receipt, and manage your speaking practice preferences."
+          : "Manage your SpeakUpp account and speaking practice preferences.",
       },
       { property: "og:title", content: "Account — SpeakUpp" },
       {
         property: "og:description",
-        content: "Manage your subscription, receipt, and speaking practice preferences.",
+        content: isMonetizationEnabled()
+          ? "Manage your subscription, receipt, and speaking practice preferences."
+          : "Manage your SpeakUpp account and speaking practice preferences.",
       },
     ],
   }),
@@ -53,10 +57,14 @@ function Account() {
 // -----------------------------------------------------------------------------
   useEffect(() => {
     if (!user) return;
-    getMySubscription()
-      .then((r) => setSub(r.subscription))
-      .catch(() => setSub(null))
-      .finally(() => setLoaded(true));
+    if (isMonetizationEnabled()) {
+      getMySubscription()
+        .then((r) => setSub(r.subscription))
+        .catch(() => setSub(null))
+        .finally(() => setLoaded(true));
+    } else {
+      setLoaded(true);
+    }
   }, [user]);
 
   if (loading || !user) {
@@ -66,7 +74,7 @@ function Account() {
 // -----------------------------------------------------------------------------
 // Derived State
 // -----------------------------------------------------------------------------
-  const isActive = sub?.status === "active";
+  const isActive = isMonetizationEnabled() && sub?.status === "active";
   const formattedDate = (iso: string | null | undefined) =>
     iso ? new Date(iso).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" }) : "—";
 
@@ -80,56 +88,73 @@ function Account() {
       <main className="mx-auto max-w-3xl px-4 pb-16 sm:px-6">
         <header className="mb-8">
           <p className="text-xs uppercase tracking-widest text-muted-foreground">Account</p>
-          <h1 className="mt-2 font-display text-4xl">Your subscription</h1>
+          <h1 className="mt-2 font-display text-4xl">
+            {isMonetizationEnabled() ? "Your subscription" : "Your account"}
+          </h1>
         </header>
 
-        {!loaded ? (
-          <div className="rounded-3xl border border-border bg-card p-6 shadow-elevated sm:p-8">
-            <div className="h-32 animate-pulse rounded-xl bg-muted" />
-          </div>
-        ) : !sub ? (
-          <div className="rounded-3xl border border-border bg-card p-6 text-center shadow-elevated sm:p-8">
-            <p className="text-muted-foreground">You're on the free plan.</p>
-            <Link
-              to="/upgrade"
-              className="mt-6 inline-flex items-center justify-center rounded-full bg-terracotta px-6 py-3 text-sm font-medium text-white hover:opacity-90"
-            >
-              Upgrade to Pro
-            </Link>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {/* Status card */}
+        {isMonetizationEnabled() ? (
+          !loaded ? (
             <div className="rounded-3xl border border-border bg-card p-6 shadow-elevated sm:p-8">
-              <div className="flex items-center gap-3">
-                {isActive && (
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-terracotta/10 px-3 py-1 text-xs font-medium text-terracotta">
-                    <Crown className="size-3.5" /> Pro
-                  </span>
-                )}
-                <span className="text-xs uppercase tracking-widest text-muted-foreground">{sub.status}</span>
-              </div>
-              <h2 className="mt-3 font-display text-2xl capitalize">{sub.plan} access</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                {isActive
-                  ? "You have unlimited access to all speaking practice features."
-                  : sub.status === "refunded"
-                  ? "This payment was refunded."
-                  : `Subscription status: ${sub.status}`}
-              </p>
+              <div className="h-32 animate-pulse rounded-xl bg-muted" />
             </div>
+          ) : !sub ? (
+            <div className="rounded-3xl border border-border bg-card p-6 text-center shadow-elevated sm:p-8">
+              <p className="text-muted-foreground">You're on the free plan.</p>
+              <Link
+                to="/upgrade"
+                className="mt-6 inline-flex items-center justify-center rounded-full bg-terracotta px-6 py-3 text-sm font-medium text-white hover:opacity-90"
+              >
+                Upgrade to Pro
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {/* Status card */}
+              <div className="rounded-3xl border border-border bg-card p-6 shadow-elevated sm:p-8">
+                <div className="flex items-center gap-3">
+                  {isActive && (
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-terracotta/10 px-3 py-1 text-xs font-medium text-terracotta">
+                      <Crown className="size-3.5" /> Pro
+                    </span>
+                  )}
+                  <span className="text-xs uppercase tracking-widest text-muted-foreground">{sub.status}</span>
+                </div>
+                <h2 className="mt-3 font-display text-2xl capitalize">{sub.plan} access</h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {isActive
+                    ? "You have unlimited access to all speaking practice features."
+                    : sub.status === "refunded"
+                    ? "This payment was refunded."
+                    : `Subscription status: ${sub.status}`}
+                </p>
+              </div>
 
-            {/* Receipt card */}
-            <div className="rounded-3xl border border-border bg-card p-6 shadow-elevated sm:p-8">
-              <h3 className="font-display text-xl">Payment receipt</h3>
-              <dl className="mt-6 space-y-4 text-sm">
-                <Row label="Amount paid" value={sub.amountDisplay ?? "—"} />
-                <Row label="Currency" value={sub.currency ?? "—"} />
-                <Row label="Payment date" value={formattedDate(sub.paidAt)} />
-                <Row label="Payment method" value={sub.provider ?? "—"} mono />
-                <Row label="Order ID" value={sub.orderId ?? "—"} mono />
-                <Row label="Transaction ID" value={sub.captureId ?? "—"} mono />
-              </dl>
+              {/* Receipt card */}
+              <div className="rounded-3xl border border-border bg-card p-6 shadow-elevated sm:p-8">
+                <h3 className="font-display text-xl">Payment receipt</h3>
+                <dl className="mt-6 space-y-4 text-sm">
+                  <Row label="Amount paid" value={sub.amountDisplay ?? "—"} />
+                  <Row label="Currency" value={sub.currency ?? "—"} />
+                  <Row label="Payment date" value={formattedDate(sub.paidAt)} />
+                  <Row label="Payment method" value={sub.provider ?? "—"} mono />
+                  <Row label="Order ID" value={sub.orderId ?? "—"} mono />
+                  <Row label="Transaction ID" value={sub.captureId ?? "—"} mono />
+                </dl>
+              </div>
+            </div>
+          )
+        ) : (
+          <div className="rounded-3xl border border-border bg-card p-6 shadow-elevated sm:p-8">
+            <p className="text-xs uppercase tracking-widest text-muted-foreground">Profile</p>
+            <h2 className="mt-2 font-display text-2xl">
+              {(user.user_metadata as { display_name?: string } | null)?.display_name || user.email?.split("@")[0] || "Learner"}
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">{user.email}</p>
+            <div className="mt-6 border-t border-border/50 pt-4">
+              <p className="text-sm text-muted-foreground">
+                You have full, unlimited access to all speaking practice features, AI feedback, and session history.
+              </p>
             </div>
           </div>
         )}

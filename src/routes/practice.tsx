@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { AppHeader } from "@/components/app-header";
 import { getOnboarding } from "@/functions/onboarding.functions";
 import { trackEvent } from "@/lib/observability";
+import { isMonetizationEnabled } from "@/lib/monetization";
 
 // -----------------------------------------------------------------------------
 // Configuration
@@ -129,7 +130,7 @@ function Practice() {
       setSessionCount(s.sessionCount);
       setHasActive(s.hasActive);
       setStatusLoaded(true);
-      if (!s.hasActive && s.sessionCount >= FREE_LIMIT - 1) {
+      if (isMonetizationEnabled() && !s.hasActive && s.sessionCount >= FREE_LIMIT - 1) {
         // preload local price for paywall display
         try {
           const p = await getLocalPrice({ data: {} });
@@ -383,7 +384,7 @@ function Practice() {
             {(() => {
               if (!statusLoaded) return null;
               const nextSession = sessionCount + 1;
-              const locked = !hasActive && sessionCount >= FREE_LIMIT;
+              const locked = isMonetizationEnabled() && !hasActive && sessionCount >= FREE_LIMIT;
               if (locked) {
                 return (
                   <div className="mt-6 rounded-2xl border border-terracotta/40 bg-accent/30 p-5 text-center">
@@ -402,7 +403,7 @@ function Practice() {
               }
               return (
                 <>
-                  {!hasActive && nextSession >= 7 && nextSession <= 13 && (
+                  {isMonetizationEnabled() && !hasActive && nextSession >= 7 && nextSession <= 13 && (
                     <div className="mt-6 rounded-full bg-secondary/60 px-4 py-2 text-center text-xs text-muted-foreground">
                       {sessionCount} of {FREE_LIMIT} free sessions used
                       <div className="mt-1 h-1 overflow-hidden rounded-full bg-muted">
@@ -410,12 +411,12 @@ function Practice() {
                       </div>
                     </div>
                   )}
-                  {!hasActive && nextSession === 14 && (
+                  {isMonetizationEnabled() && !hasActive && nextSession === 14 && (
                     <div className="mt-6 rounded-2xl border border-amber-500/30 bg-amber-50/40 px-4 py-3 text-center text-sm text-foreground">
                       ✨ 1 free session remaining — enjoy it!
                     </div>
                   )}
-                  {!hasActive && nextSession === 15 && (
+                  {isMonetizationEnabled() && !hasActive && nextSession === 15 && (
                     <div className="mt-6 rounded-2xl border border-terracotta/40 bg-accent/20 px-4 py-3 text-center text-sm text-foreground">
                       Last free session — let's make it a great one
                     </div>
@@ -477,7 +478,7 @@ function Practice() {
               <p className="mt-3 text-muted-foreground">{feedback.overall_summary}</p>
             </div>
 
-            {!hasActive && sessionCount === FREE_LIMIT && (
+            {isMonetizationEnabled() && !hasActive && sessionCount === FREE_LIMIT && (
               <div className="rounded-3xl border-2 border-terracotta/50 bg-gradient-to-br from-accent/30 to-peach/20 p-6 shadow-elevated">
                 <p className="text-xs uppercase tracking-widest text-terracotta">✨ Premium preview</p>
                 <h3 className="mt-2 font-display text-2xl">This was your last free session</h3>

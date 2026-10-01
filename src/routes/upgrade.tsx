@@ -1,7 +1,7 @@
 // -----------------------------------------------------------------------------
 // External dependencies
 // -----------------------------------------------------------------------------
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { useAuth } from "@/lib/auth-context";
@@ -9,6 +9,7 @@ import { getLocalPrice, createPaypalOrder, capturePaypalOrder, getUserStatus } f
 import { getPaypalClientId } from "@/functions/paypal-config.functions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { isMonetizationEnabled } from "@/lib/monetization";
 
 // -----------------------------------------------------------------------------
 // Constants
@@ -40,6 +41,12 @@ const CURRENCY_META: Record<string, { name: string; symbol: string }> = {
 // Route Configuration
 // -----------------------------------------------------------------------------
 export const Route = createFileRoute("/upgrade")({
+  beforeLoad: () => {
+    // If monetization is dormant, redirect users to dashboard
+    if (!isMonetizationEnabled()) {
+      throw redirect({ to: "/dashboard" });
+    }
+  },
   head: () => ({
     meta: [
       { title: "Upgrade to lifetime access — SpeakUpp" },
@@ -77,12 +84,18 @@ function Upgrade() {
     if (!loading && !user) nav({ to: "/login" });
   }, [user, loading, nav]);
 
+  useEffect(() => {
+    if (!isMonetizationEnabled()) {
+      nav({ to: "/dashboard", replace: true });
+    }
+  }, [nav]);
+
   // Auto-redirect users who already have an active subscription
 // -----------------------------------------------------------------------------
 // Data Loading
 // -----------------------------------------------------------------------------
   useEffect(() => {
-    if (!user) return;
+    if (!user || !isMonetizationEnabled()) return;
     getUserStatus()
       .then((s) => {
         if (s.hasActive) {
@@ -94,6 +107,7 @@ function Upgrade() {
   }, [user, nav]);
 
   useEffect(() => {
+    if (!isMonetizationEnabled()) return;
     (async () => {
       const [p, c] = await Promise.all([
         getLocalPrice({ data: {} }),

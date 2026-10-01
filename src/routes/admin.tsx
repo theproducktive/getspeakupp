@@ -22,6 +22,7 @@ import {
   listAuditLog,
 } from "@/functions/admin.functions";
 import { Shield, Users, CreditCard, BadgeCheck, Mic, MessageSquare, Activity, Loader2 } from "lucide-react";
+import { isMonetizationEnabled } from "@/lib/monetization";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -89,9 +90,16 @@ function AdminPage() {
     <div className="min-h-dvh bg-ambient">
       <AppHeader isAdmin={authorized === true} />
       <main className="mx-auto w-full max-w-6xl px-4 pb-20 pt-2 sm:px-6">
-        <div className="mb-6 flex items-center gap-3">
-          <Shield className="size-6 text-terracotta" />
-          <h1 className="font-display text-3xl tracking-tight">Admin</h1>
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <Shield className="size-6 text-terracotta" />
+            <h1 className="font-display text-3xl tracking-tight">Admin</h1>
+          </div>
+          {!isMonetizationEnabled() && (
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-700 dark:text-amber-300">
+              Monetization: Dormant (Free Mode)
+            </span>
+          )}
         </div>
 
         <div className="mb-6 flex flex-wrap gap-2">

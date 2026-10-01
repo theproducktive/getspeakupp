@@ -11,6 +11,7 @@ import { supabaseAdmin } from "@/integrations/supabase/client.backend";
 import { interestsHash, CACHE_MIN_BEFORE_REUSE, CACHE_TARGET_POOL } from "@/lib/topic-cache";
 import { captureServerException } from "@/backend/observability.backend";
 import { assertWithinFreeQuota } from "@/backend/quota.backend";
+import { isMonetizationEnabled } from "@/lib/monetization";
 
 // -----------------------------------------------------------------------------
 // Input Validation
@@ -115,25 +116,27 @@ export const generateTopic = createServerFn({ method: "POST" })
       }
     }
 
-    const { data: sub } = await supabaseAdmin
-      .from("subscriptions")
-      .select("id")
-      .eq("user_id", context.userId)
-      .eq("status", "active")
-      .limit(1)
-      .maybeSingle();
-
-    if (!sub) {
-      const since = new Date(now - 24 * 60 * 60 * 1000).toISOString();
-      const { count } = await supabaseAdmin
-        .from("topic_generation_log")
-        .select("id", { count: "exact", head: true })
+    if (isMonetizationEnabled()) {
+      const { data: sub } = await supabaseAdmin
+        .from("subscriptions")
+        .select("id")
         .eq("user_id", context.userId)
-        .gte("created_at", since);
-      if ((count ?? 0) >= DAILY_CAP_FREE) {
-        throw new Error(
-          `You've hit today's topic generation limit (${DAILY_CAP_FREE}/day). Please try again tomorrow or upgrade.`,
-        );
+        .eq("status", "active")
+        .limit(1)
+        .maybeSingle();
+
+      if (!sub) {
+        const since = new Date(now - 24 * 60 * 60 * 1000).toISOString();
+        const { count } = await supabaseAdmin
+          .from("topic_generation_log")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", context.userId)
+          .gte("created_at", since);
+        if ((count ?? 0) >= DAILY_CAP_FREE) {
+          throw new Error(
+            `You've hit today's topic generation limit (${DAILY_CAP_FREE}/day). Please try again tomorrow or upgrade.`,
+          );
+        }
       }
     }
 

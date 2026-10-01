@@ -5,6 +5,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { attachSupabaseAuth } from "@/backend/auth-client-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.backend";
+import { isMonetizationEnabled } from "@/lib/monetization";
 
 // -----------------------------------------------------------------------------
 // Types
@@ -107,14 +108,17 @@ export const getDashboardStats = createServerFn({ method: "POST" })
     const today = ymd(new Date());
     const practicedToday = sessions.some((s) => ymd(new Date(s.created_at)) === today);
 
-    // Active subscription check
-    const { data: subs } = await supabaseAdmin
-      .from("subscriptions")
-      .select("status")
-      .eq("user_id", userId)
-      .eq("status", "active")
-      .limit(1);
-    const hasActive = (subs?.length ?? 0) > 0;
+    // Active subscription check (dormant when monetization is off)
+    let hasActive = false;
+    if (isMonetizationEnabled()) {
+      const { data: subs } = await supabaseAdmin
+        .from("subscriptions")
+        .select("status")
+        .eq("user_id", userId)
+        .eq("status", "active")
+        .limit(1);
+      hasActive = (subs?.length ?? 0) > 0;
+    }
 
     // Onboarding + weekly goal
     const { data: prefs } = await supabaseAdmin

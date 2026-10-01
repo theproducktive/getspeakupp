@@ -5,6 +5,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { attachSupabaseAuth } from "@/backend/auth-client-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.backend";
+import { isMonetizationEnabled } from "@/lib/monetization";
 
 // -----------------------------------------------------------------------------
 // Subscription Query
@@ -12,6 +13,9 @@ import { supabaseAdmin } from "@/integrations/supabase/client.backend";
 export const getMySubscription = createServerFn({ method: "POST" })
   .middleware([attachSupabaseAuth, requireSupabaseAuth])
   .handler(async ({ context }) => {
+    if (!isMonetizationEnabled()) {
+      return { subscription: null as null };
+    }
     const { userId } = context;
     const { data } = await supabaseAdmin
       .from("subscriptions")

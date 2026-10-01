@@ -7,6 +7,7 @@ import { Menu, X, Sparkles, Shield } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { useAuth } from "@/lib/auth-context";
 import { useI18n } from "@/lib/i18n";
+import { isMonetizationEnabled } from "@/lib/monetization";
 
 // -----------------------------------------------------------------------------
 // Types
@@ -50,7 +51,7 @@ export function AppHeader({ hasActive, isAdmin = false }: Props) {
 // Pro/Upgrade Badge
 // -----------------------------------------------------------------------------
   const ProPill =
-    hasActive === undefined ? null : hasActive ? (
+    !isMonetizationEnabled() || hasActive === undefined ? null : hasActive ? (
       <Link
         to="/account"
         onClick={close}

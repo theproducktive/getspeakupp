@@ -5,6 +5,7 @@
 // External dependencies
 // -----------------------------------------------------------------------------
 import { supabaseAdmin } from "@/integrations/supabase/client.backend";
+import { isMonetizationEnabled } from "@/lib/monetization";
 
 // -----------------------------------------------------------------------------
 // Configuration
@@ -15,6 +16,11 @@ export const FREE_SESSION_LIMIT = 15;
 // Quota Enforcement
 // -----------------------------------------------------------------------------
 export async function assertWithinFreeQuota(userId: string): Promise<void> {
+  // If monetization is disabled, SpeakUpp is completely free with unlimited practice.
+  if (!isMonetizationEnabled()) {
+    return;
+  }
+
   // Active lifetime/paid subscription bypasses the cap.
   const { data: sub, error: subErr } = await supabaseAdmin
     .from("subscriptions")
