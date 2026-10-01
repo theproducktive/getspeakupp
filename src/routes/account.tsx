@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
-import { getMySubscription } from "@/server/account.functions";
+import { getMySubscription } from "@/functions/account.functions";
 import { Crown, Settings2, ArrowRight } from "lucide-react";
 import { AppHeader } from "@/components/app-header";
 

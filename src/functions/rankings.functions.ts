@@ -1,8 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { attachSupabaseAuth } from "./auth-client-middleware";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { attachSupabaseAuth } from "@/backend/auth-client-middleware";
+import { supabaseAdmin } from "@/integrations/supabase/client.backend";
 
 const Input = z.object({
   language: z.enum(["en", "fr", "ar"]),

@@ -1,7 +1,7 @@
 // Server-only freemium quota enforcement. Prevents paywall bypass via direct
 // server-function calls. The 15-session free limit MUST be checked server-side
 // because the client cap in src/routes/practice.tsx can be skipped trivially.
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { supabaseAdmin } from "@/integrations/supabase/client.backend";
 
 export const FREE_SESSION_LIMIT = 15;
 

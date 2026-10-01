@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
-import { saveOnboarding, getOnboarding } from "@/server/onboarding.functions";
+import { saveOnboarding, getOnboarding } from "@/functions/onboarding.functions";
 import { INTERESTS, interestLabel } from "@/lib/interests";
 import { useI18n } from "@/lib/i18n";
 import { Logo } from "@/components/logo";

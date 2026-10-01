@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useI18n, LANGUAGES, type LangCode } from "@/lib/i18n";
-import { getRankings, type RankingRow } from "@/server/rankings.functions";
+import { getRankings, type RankingRow } from "@/functions/rankings.functions";
 import { Trophy, Medal, Award } from "lucide-react";
 import { AppHeader } from "@/components/app-header";
 

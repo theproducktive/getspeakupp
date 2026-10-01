@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useI18n } from "@/lib/i18n";
-import { getDashboardStats } from "@/server/dashboard.functions";
+import { getDashboardStats } from "@/functions/dashboard.functions";
 import { Flame, History, Trophy, Sparkles, ArrowRight, Target } from "lucide-react";
 import { AppHeader } from "@/components/app-header";
 
@@ -30,7 +30,7 @@ type Stats = Awaited<ReturnType<typeof getDashboardStats>>;
 const LANG_LABEL: Record<string, string> = { en: "English", fr: "French", ar: "Arabic" };
 
 function Dashboard() {
-  const { user, loading, signOut } = useAuth();
+  const { user, loading } = useAuth();
   const { t } = useI18n();
   const nav = useNavigate();
   const [stats, setStats] = useState<Stats | null>(null);

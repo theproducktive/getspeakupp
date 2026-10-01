@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/lib/auth-context";
 import { useI18n } from "@/lib/i18n";
-import { getSessionHistory } from "@/server/history.functions";
+import { getSessionHistory } from "@/functions/history.functions";
 import { AppHeader } from "@/components/app-header";
 import { ChevronRight } from "lucide-react";
 

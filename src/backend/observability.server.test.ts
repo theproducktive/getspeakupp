@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { captureServerException } from "@/server/observability.server";
+import { captureServerException } from "@/backend/observability.backend";
 
 describe("captureServerException", () => {
   it("does not throw when SENTRY_DSN is not set", () => {

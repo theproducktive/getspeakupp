@@ -2,8 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { useAuth } from "@/lib/auth-context";
-import { getLocalPrice, createPaypalOrder, capturePaypalOrder, getUserStatus } from "@/server/paypal.functions";
-import { getPaypalClientId } from "@/server/paypal-config.functions";
+import { getLocalPrice, createPaypalOrder, capturePaypalOrder, getUserStatus } from "@/functions/paypal.functions";
+import { getPaypalClientId } from "@/functions/paypal-config.functions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 

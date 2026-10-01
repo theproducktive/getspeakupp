@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { attachSupabaseAuth } from "./auth-client-middleware";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { attachSupabaseAuth } from "@/backend/auth-client-middleware";
+import { supabaseAdmin } from "@/integrations/supabase/client.backend";
 
 export const getMySubscription = createServerFn({ method: "POST" })
   .middleware([attachSupabaseAuth, requireSupabaseAuth])

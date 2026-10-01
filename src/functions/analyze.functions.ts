@@ -2,10 +2,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { attachSupabaseAuth } from "@/server/auth-client-middleware";
-import { captureServerException } from "@/server/observability.server";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { assertWithinFreeQuota } from "@/server/quota.server";
+import { attachSupabaseAuth } from "@/backend/auth-client-middleware";
+import { captureServerException } from "@/backend/observability.backend";
+import { supabaseAdmin } from "@/integrations/supabase/client.backend";
+import { assertWithinFreeQuota } from "@/backend/quota.backend";
 
 
 
@@ -17,8 +17,6 @@ const InputSchema = z.object({
   levelId: z.number().int().min(1).max(10),
   durationSec: z.number().int().min(0).max(600).optional(),
 });
-
-const LANG_TO_ISO: Record<string, string> = { en: "eng", fr: "fra", ar: "ara" };
 
 export const analyzeSession = createServerFn({ method: "POST" })
   .middleware([attachSupabaseAuth, requireSupabaseAuth])

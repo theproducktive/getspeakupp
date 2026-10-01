@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
-import { getSessionDetail } from "@/server/session.functions";
+import { getSessionDetail } from "@/functions/session.functions";
 import { AppHeader } from "@/components/app-header";
 import { ArrowLeft, Sparkles, Mic, BookOpen, MessageSquare } from "lucide-react";
 

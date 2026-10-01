@@ -3,11 +3,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { attachSupabaseAuth } from "@/server/auth-client-middleware";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { attachSupabaseAuth } from "@/backend/auth-client-middleware";
+import { supabaseAdmin } from "@/integrations/supabase/client.backend";
 import { interestsHash, CACHE_MIN_BEFORE_REUSE, CACHE_TARGET_POOL } from "@/lib/topic-cache";
-import { captureServerException } from "@/server/observability.server";
-import { assertWithinFreeQuota } from "@/server/quota.server";
+import { captureServerException } from "@/backend/observability.backend";
+import { assertWithinFreeQuota } from "@/backend/quota.backend";
 
 const InputSchema = z.object({
   language: z.enum(["en", "fr", "ar"]),

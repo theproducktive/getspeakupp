@@ -1,8 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { attachSupabaseAuth } from "@/server/auth-client-middleware";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { attachSupabaseAuth } from "@/backend/auth-client-middleware";
+import { supabaseAdmin } from "@/integrations/supabase/client.backend";
 
 /**
  * Helper: assert the calling user is an admin via trusted server-side lookup.

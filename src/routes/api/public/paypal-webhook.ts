@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { getPaypalBase, getPaypalToken } from "@/server/paypal.server";
+import { supabaseAdmin } from "@/integrations/supabase/client.backend";
+import { getPaypalBase, getPaypalToken } from "@/backend/paypal.backend";
 
 // PayPal webhook handler
 // Configure in PayPal Developer Dashboard:

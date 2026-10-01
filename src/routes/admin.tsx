@@ -17,7 +17,7 @@ import {
   upsertTopic,
   deleteTopic,
   listAuditLog,
-} from "@/server/admin.functions";
+} from "@/functions/admin.functions";
 import { Shield, Users, CreditCard, BadgeCheck, Mic, MessageSquare, Activity, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({

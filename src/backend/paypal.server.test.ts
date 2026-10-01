@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { currencyForCountry, computeLocalPrice, SUPPORTED_CURRENCIES, BASE_USD } from "@/server/paypal.server";
+import { currencyForCountry, computeLocalPrice, SUPPORTED_CURRENCIES, BASE_USD } from "@/backend/paypal.backend";
 
 describe("currencyForCountry", () => {
   it("maps eurozone countries to EUR", () => {

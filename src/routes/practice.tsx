@@ -4,12 +4,12 @@ import { useAuth } from "@/lib/auth-context";
 import { useI18n, LANGUAGES, type LangCode } from "@/lib/i18n";
 import { INTERESTS, interestLabel } from "@/lib/interests";
 import { supabase } from "@/integrations/supabase/client";
-import { analyzeSession } from "@/server/analyze.functions";
-import { generateTopic } from "@/server/topic.functions";
-import { getUserStatus, getLocalPrice } from "@/server/paypal.functions";
+import { analyzeSession } from "@/functions/analyze.functions";
+import { generateTopic } from "@/functions/topic.functions";
+import { getUserStatus, getLocalPrice } from "@/functions/paypal.functions";
 import { toast } from "sonner";
 import { AppHeader } from "@/components/app-header";
-import { getOnboarding } from "@/server/onboarding.functions";
+import { getOnboarding } from "@/functions/onboarding.functions";
 import { trackEvent } from "@/lib/observability";
 
 const FREE_LIMIT = 15;

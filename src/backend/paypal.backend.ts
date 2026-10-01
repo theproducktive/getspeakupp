@@ -1,7 +1,7 @@
 // Server-only PayPal + geo/FX helpers.
 // Set PAYPAL_ENV secret to "live" to use production. Defaults to sandbox.
-import { captureServerException } from "@/server/observability.server";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { captureServerException } from "@/backend/observability.backend";
+import { supabaseAdmin } from "@/integrations/supabase/client.backend";
 
 
 function resolvePaypalBase() {
