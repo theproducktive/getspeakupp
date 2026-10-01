@@ -1,3 +1,6 @@
+// -----------------------------------------------------------------------------
+// External dependencies
+// -----------------------------------------------------------------------------
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -24,6 +27,9 @@ function sinceForRange(range: "all" | "month" | "week"): string | null {
   return new Date(Date.now() - days * 86_400_000).toISOString();
 }
 
+// -----------------------------------------------------------------------------
+// Rankings RPC
+// -----------------------------------------------------------------------------
 export const getRankings = createServerFn({ method: "POST" })
   .middleware([attachSupabaseAuth, requireSupabaseAuth])
   .inputValidator((data: unknown) => Input.parse(data))

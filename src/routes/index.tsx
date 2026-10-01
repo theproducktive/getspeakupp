@@ -1,3 +1,6 @@
+// -----------------------------------------------------------------------------
+// External dependencies
+// -----------------------------------------------------------------------------
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useI18n, LANGUAGES } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth-context";
@@ -5,6 +8,9 @@ import { Mic, Sparkles, Timer, Trophy, Plane, UtensilsCrossed, Music, Laptop } f
 import { Logo } from "@/components/logo";
 import { AppHeader } from "@/components/app-header";
 
+// -----------------------------------------------------------------------------
+// Route Configuration
+// -----------------------------------------------------------------------------
 export const Route = createFileRoute("/")({
   component: Landing,
   head: () => ({
@@ -59,6 +65,9 @@ function LangSwitcher() {
   );
 }
 
+// -----------------------------------------------------------------------------
+// Page Component
+// -----------------------------------------------------------------------------
 function Landing() {
   const { t } = useI18n();
   const { user } = useAuth();

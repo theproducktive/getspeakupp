@@ -1,3 +1,6 @@
+// -----------------------------------------------------------------------------
+// External dependencies
+// -----------------------------------------------------------------------------
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { AuthProvider } from "@/lib/auth-context";
 import { I18nProvider } from "@/lib/i18n";
@@ -5,6 +8,9 @@ import { Toaster } from "@/components/ui/sonner";
 
 import appCss from "../styles.css?url";
 
+// -----------------------------------------------------------------------------
+// Not Found Page
+// -----------------------------------------------------------------------------
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -27,6 +33,9 @@ function NotFoundComponent() {
   );
 }
 
+// -----------------------------------------------------------------------------
+// Root Route Configuration
+// -----------------------------------------------------------------------------
 export const Route = createRootRoute({
   head: () => ({
     meta: [
@@ -90,6 +99,9 @@ export const Route = createRootRoute({
   notFoundComponent: NotFoundComponent,
 });
 
+// -----------------------------------------------------------------------------
+// HTML Shell
+// -----------------------------------------------------------------------------
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -104,6 +116,9 @@ function RootShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+// -----------------------------------------------------------------------------
+// Root Component
+// -----------------------------------------------------------------------------
 function RootComponent() {
   return (
     <I18nProvider>

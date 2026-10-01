@@ -1,3 +1,6 @@
+// -----------------------------------------------------------------------------
+// External dependencies
+// -----------------------------------------------------------------------------
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
@@ -11,6 +14,10 @@ import { toast } from "sonner";
 import { AppHeader } from "@/components/app-header";
 import { getOnboarding } from "@/functions/onboarding.functions";
 import { trackEvent } from "@/lib/observability";
+
+// -----------------------------------------------------------------------------
+// Configuration
+// -----------------------------------------------------------------------------
 
 const FREE_LIMIT = 15;
 
@@ -33,6 +40,10 @@ export const Route = createFileRoute("/practice")({
   component: Practice,
 });
 
+// -----------------------------------------------------------------------------
+// Types
+// -----------------------------------------------------------------------------
+
 type Phase = "idle" | "thinking" | "speaking" | "uploading" | "done";
 type Feedback = {
   overall_summary: string;
@@ -46,6 +57,9 @@ type Feedback = {
 const INTERESTS_KEY = "orador.interests";
 
 function Practice() {
+// -----------------------------------------------------------------------------
+// Practice State
+// -----------------------------------------------------------------------------
   const { user, loading } = useAuth();
   const { t, lang } = useI18n();
   const nav = useNavigate();
@@ -76,6 +90,9 @@ function Practice() {
     if (!loading && !user) nav({ to: "/login" });
   }, [user, loading, nav]);
 
+// -----------------------------------------------------------------------------
+// Data Loading
+// -----------------------------------------------------------------------------
   // Load saved interests + onboarding preferences (preferences take precedence on first load)
   useEffect(() => {
     let cancelled = false;
@@ -137,6 +154,9 @@ function Practice() {
   };
 
   // Phase timer
+// -----------------------------------------------------------------------------
+// Timer Management
+// -----------------------------------------------------------------------------
   useEffect(() => {
     if (phase !== "thinking" && phase !== "speaking") return;
     if (secondsLeft <= 0) {

@@ -1,8 +1,14 @@
+// -----------------------------------------------------------------------------
+// External dependencies
+// -----------------------------------------------------------------------------
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { initObservability, identifyUser, resetUser } from "@/lib/observability";
 
+// -----------------------------------------------------------------------------
+// Types
+// -----------------------------------------------------------------------------
 type AuthContextValue = {
   user: User | null;
   session: Session | null;
@@ -10,6 +16,9 @@ type AuthContextValue = {
   signOut: () => Promise<void>;
 };
 
+// -----------------------------------------------------------------------------
+// Context Definition
+// -----------------------------------------------------------------------------
 const AuthContext = createContext<AuthContextValue>({
   user: null,
   session: null,
@@ -17,6 +26,9 @@ const AuthContext = createContext<AuthContextValue>({
   signOut: async () => {},
 });
 
+// -----------------------------------------------------------------------------
+// Auth Provider
+// -----------------------------------------------------------------------------
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
@@ -53,6 +65,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// -----------------------------------------------------------------------------
+// Hooks
+// -----------------------------------------------------------------------------
 export function useAuth() {
   return useContext(AuthContext);
 }

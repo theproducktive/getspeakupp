@@ -12,6 +12,9 @@ function resolvePaypalBase() {
 }
 
 // Base price in USD (single source of truth)
+// -----------------------------------------------------------------------------
+// Currency Configuration
+// -----------------------------------------------------------------------------
 export const BASE_USD = 9.99;
 
 // Country -> PayPal-supported currency mapping
@@ -40,6 +43,9 @@ const ZERO_DECIMAL = new Set(["JPY", "HUF", "TWD"]);
 let fxCache: { rates: Record<string, number>; fetchedAt: number } | null = null;
 const FX_TTL_MS = 24 * 60 * 60 * 1000;
 
+// -----------------------------------------------------------------------------
+// Exchange Rate Handling
+// -----------------------------------------------------------------------------
 async function loadFxFromDb(): Promise<{ rates: Record<string, number>; fetchedAt: number } | null> {
   try {
     const { data } = await supabaseAdmin
@@ -104,6 +110,9 @@ function roundClean(amount: number, currency: string): number {
   return adjusted / 100;
 }
 
+// -----------------------------------------------------------------------------
+// Price Calculation
+// -----------------------------------------------------------------------------
 export async function computeLocalPrice(currency: string): Promise<{
   currency: string;
   amount: number; // human-readable (e.g. 9.99)
@@ -120,6 +129,9 @@ export async function computeLocalPrice(currency: string): Promise<{
   return { currency: cur, amount, amountMinor, display };
 }
 
+// -----------------------------------------------------------------------------
+// Geolocation
+// -----------------------------------------------------------------------------
 export function currencyForCountry(countryCode: string | null | undefined): string {
   if (!countryCode) return "USD";
   return COUNTRY_CURRENCY[countryCode.toUpperCase()] ?? "USD";
@@ -139,6 +151,9 @@ export async function lookupCountry(ip: string | null): Promise<string | null> {
 }
 
 // PayPal API
+// -----------------------------------------------------------------------------
+// PayPal API Client
+// -----------------------------------------------------------------------------
 export async function getPaypalToken(): Promise<string> {
   const id = process.env.PAYPAL_CLIENT_ID;
   const secret = process.env.PAYPAL_SECRET;
@@ -166,6 +181,9 @@ export function getPaypalBase() {
   return resolvePaypalBase();
 }
 
+// -----------------------------------------------------------------------------
+// Order Creation
+// -----------------------------------------------------------------------------
 export async function paypalCreateOrder(currency: string, amount: number, userId?: string): Promise<string> {
   const token = await getPaypalToken();
   const res = await fetch(`${getPaypalBase()}/v2/checkout/orders`, {
@@ -191,6 +209,9 @@ export async function paypalCreateOrder(currency: string, amount: number, userId
   return json.id as string;
 }
 
+// -----------------------------------------------------------------------------
+// Order Capture
+// -----------------------------------------------------------------------------
 export async function paypalCaptureOrder(orderId: string): Promise<{
   captureId: string;
   currency: string;

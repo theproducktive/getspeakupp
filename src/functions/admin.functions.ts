@@ -1,3 +1,6 @@
+// -----------------------------------------------------------------------------
+// External dependencies
+// -----------------------------------------------------------------------------
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -45,6 +48,9 @@ async function logAudit(adminId: string, action: string, opts?: {
 }
 
 // ---------------- check ----------------
+// -----------------------------------------------------------------------------
+// Admin Authorization
+// -----------------------------------------------------------------------------
 export const checkAdmin = createServerFn({ method: "GET" })
   .middleware([attachSupabaseAuth, requireSupabaseAuth])
   .handler(async ({ context }) => {
@@ -62,6 +68,9 @@ export const checkAdmin = createServerFn({ method: "GET" })
   });
 
 // ---------------- overview ----------------
+// -----------------------------------------------------------------------------
+// Dashboard Statistics
+// -----------------------------------------------------------------------------
 export const getAdminOverview = createServerFn({ method: "GET" })
   .middleware([attachSupabaseAuth, requireSupabaseAuth])
   .handler(async ({ context }) => {
@@ -93,6 +102,9 @@ export const getAdminOverview = createServerFn({ method: "GET" })
   });
 
 // ---------------- users ----------------
+// -----------------------------------------------------------------------------
+// User Management
+// -----------------------------------------------------------------------------
 export const listUsers = createServerFn({ method: "GET" })
   .middleware([attachSupabaseAuth, requireSupabaseAuth])
   .inputValidator((d) => z.object({ search: z.string().max(120).optional(), page: z.number().int().min(0).max(500).default(0) }).parse(d))
@@ -192,6 +204,9 @@ export const setUserRole = createServerFn({ method: "POST" })
   });
 
 // ---------------- payment requests ----------------
+// -----------------------------------------------------------------------------
+// Payment Management
+// -----------------------------------------------------------------------------
 export const listPaymentRequests = createServerFn({ method: "GET" })
   .middleware([attachSupabaseAuth, requireSupabaseAuth])
   .inputValidator((d) => z.object({ status: z.enum(["pending", "approved", "rejected", "all"]).default("pending") }).parse(d))
@@ -268,6 +283,9 @@ export const decidePaymentRequest = createServerFn({ method: "POST" })
   });
 
 // ---------------- subscriptions ----------------
+// -----------------------------------------------------------------------------
+// Subscription Management
+// -----------------------------------------------------------------------------
 export const listSubscriptions = createServerFn({ method: "GET" })
   .middleware([attachSupabaseAuth, requireSupabaseAuth])
   .inputValidator((d) => z.object({ status: z.enum(["active", "pending", "rejected", "expired", "all"]).default("active") }).parse(d))
@@ -314,6 +332,9 @@ export const updateSubscriptionStatus = createServerFn({ method: "POST" })
   });
 
 // ---------------- sessions ----------------
+// -----------------------------------------------------------------------------
+// Session Data
+// -----------------------------------------------------------------------------
 export const listAllSessions = createServerFn({ method: "GET" })
   .middleware([attachSupabaseAuth, requireSupabaseAuth])
   .inputValidator((d) => z.object({ page: z.number().int().min(0).max(500).default(0) }).parse(d))
@@ -339,6 +360,9 @@ export const listAllSessions = createServerFn({ method: "GET" })
   });
 
 // ---------------- topics ----------------
+// -----------------------------------------------------------------------------
+// Topic Management
+// -----------------------------------------------------------------------------
 export const listTopics = createServerFn({ method: "GET" })
   .middleware([attachSupabaseAuth, requireSupabaseAuth])
   .handler(async ({ context }) => {
@@ -395,6 +419,9 @@ export const deleteTopic = createServerFn({ method: "POST" })
   });
 
 // ---------------- audit log ----------------
+// -----------------------------------------------------------------------------
+// Audit Logging
+// -----------------------------------------------------------------------------
 export const listAuditLog = createServerFn({ method: "GET" })
   .middleware([attachSupabaseAuth, requireSupabaseAuth])
   .handler(async ({ context }) => {

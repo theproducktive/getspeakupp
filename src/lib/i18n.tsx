@@ -1,6 +1,9 @@
 // Lightweight i18n with RTL awareness for SpeakUpp.
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
+// -----------------------------------------------------------------------------
+// Types & Translation Resources
+// -----------------------------------------------------------------------------
 export type LangCode = "en" | "fr" | "ar";
 
 const dict = {
@@ -164,6 +167,9 @@ const I18nContext = createContext<{ lang: LangCode; t: Dict; setLang: (l: LangCo
   setLang: () => {},
 });
 
+// -----------------------------------------------------------------------------
+// Language Provider
+// -----------------------------------------------------------------------------
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<LangCode>("en");
 

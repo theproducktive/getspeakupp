@@ -2,10 +2,16 @@
 // Both are no-ops until the respective env vars are configured at build time.
 // We dynamic-import to keep the initial bundle as small as possible.
 
+// -----------------------------------------------------------------------------
+// Module State
+// -----------------------------------------------------------------------------
 let sentryReady = false;
 let posthogReady = false;
 let posthogClient: typeof import("posthog-js").default | null = null;
 
+// -----------------------------------------------------------------------------
+// Sentry & PostHog Initialization
+// -----------------------------------------------------------------------------
 export async function initObservability(): Promise<void> {
   if (typeof window === "undefined") return;
 
@@ -45,6 +51,9 @@ export async function initObservability(): Promise<void> {
   }
 }
 
+// -----------------------------------------------------------------------------
+// Event Tracking
+// -----------------------------------------------------------------------------
 export function trackEvent(name: string, props?: Record<string, unknown>): void {
   if (!posthogClient) return;
   try {
@@ -54,6 +63,9 @@ export function trackEvent(name: string, props?: Record<string, unknown>): void 
   }
 }
 
+// -----------------------------------------------------------------------------
+// User Identification
+// -----------------------------------------------------------------------------
 export function identifyUser(userId: string, traits?: Record<string, unknown>): void {
   if (!posthogClient) return;
   try {
@@ -63,6 +75,9 @@ export function identifyUser(userId: string, traits?: Record<string, unknown>): 
   }
 }
 
+// -----------------------------------------------------------------------------
+// User Reset
+// -----------------------------------------------------------------------------
 export function resetUser(): void {
   if (!posthogClient) return;
   try {
@@ -72,6 +87,9 @@ export function resetUser(): void {
   }
 }
 
+// -----------------------------------------------------------------------------
+// Client Error Reporting
+// -----------------------------------------------------------------------------
 export async function captureClientException(err: unknown, ctx?: Record<string, unknown>): Promise<void> {
   if (typeof window === "undefined") return;
   const dsn = import.meta.env.VITE_SENTRY_DSN as string | undefined;

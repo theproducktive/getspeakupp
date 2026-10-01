@@ -1,7 +1,13 @@
+// -----------------------------------------------------------------------------
+// External dependencies
+// -----------------------------------------------------------------------------
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.backend";
 import { getPaypalBase, getPaypalToken } from "@/backend/paypal.backend";
 
+// -----------------------------------------------------------------------------
+// Webhook Signature Verification
+// -----------------------------------------------------------------------------
 // PayPal webhook handler
 // Configure in PayPal Developer Dashboard:
 //  - URL: https://<your-domain>/api/public/paypal-webhook
@@ -50,6 +56,9 @@ async function verifyPaypalSignature(request: Request, rawBody: string): Promise
   return json.verification_status === "SUCCESS";
 }
 
+// -----------------------------------------------------------------------------
+// Route & POST Handler
+// -----------------------------------------------------------------------------
 export const Route = createFileRoute("/api/public/paypal-webhook")({
   server: {
     handlers: {
@@ -67,6 +76,9 @@ export const Route = createFileRoute("/api/public/paypal-webhook")({
 
         console.log(`[PayPal Webhook] event=${eventType} id=${event.id}`);
 
+// -----------------------------------------------------------------------------
+// Payment Capture Processing
+// -----------------------------------------------------------------------------
         try {
           if (eventType === "PAYMENT.CAPTURE.COMPLETED") {
             const orderId =
@@ -125,6 +137,9 @@ export const Route = createFileRoute("/api/public/paypal-webhook")({
             return new Response("ok", { status: 200 });
           }
 
+// -----------------------------------------------------------------------------
+// Refund Processing
+// -----------------------------------------------------------------------------
           if (eventType === "PAYMENT.CAPTURE.REFUNDED") {
             // resource.id is the refund id; the original capture id is in links
             const captureId =

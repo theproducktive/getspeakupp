@@ -1,3 +1,6 @@
+// -----------------------------------------------------------------------------
+// External dependencies
+// -----------------------------------------------------------------------------
 // Server function: transcribes audio with Lovable AI and gets structured feedback.
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
@@ -9,6 +12,9 @@ import { assertWithinFreeQuota } from "@/backend/quota.backend";
 
 
 
+// -----------------------------------------------------------------------------
+// Input Validation
+// -----------------------------------------------------------------------------
 const InputSchema = z.object({
   sessionId: z.string().uuid(),
   audioPath: z.string().min(1).max(500),
@@ -18,6 +24,9 @@ const InputSchema = z.object({
   durationSec: z.number().int().min(0).max(600).optional(),
 });
 
+// -----------------------------------------------------------------------------
+// Analysis RPC Handler
+// -----------------------------------------------------------------------------
 export const analyzeSession = createServerFn({ method: "POST" })
   .middleware([attachSupabaseAuth, requireSupabaseAuth])
   .inputValidator((data: unknown) => InputSchema.parse(data))
@@ -26,6 +35,10 @@ export const analyzeSession = createServerFn({ method: "POST" })
     const userId = context.userId;
     const lovableKey = process.env.LOVABLE_API_KEY;
     if (!lovableKey) throw new Error("LOVABLE_API_KEY not configured");
+
+// -----------------------------------------------------------------------------
+// Session Ownership & Security
+// -----------------------------------------------------------------------------
 
     // Ownership check — confirm the session belongs to this user BEFORE any
     // AI gateway call. Uses supabaseAdmin so we get an explicit 403 instead
@@ -39,6 +52,10 @@ export const analyzeSession = createServerFn({ method: "POST" })
     if (!sessionRow || sessionRow.user_id !== userId) {
       throw new Response("Forbidden: session does not belong to the authenticated user", { status: 403 });
     }
+
+// -----------------------------------------------------------------------------
+// Rate Limiting
+// -----------------------------------------------------------------------------
 
     // Per-user 60s cooldown — applies to ALL users (including paid) to
     // throttle runaway/abusive clients burning AI credits.
@@ -58,6 +75,10 @@ export const analyzeSession = createServerFn({ method: "POST" })
       }
     }
 
+// -----------------------------------------------------------------------------
+// Paywall Enforcement
+// -----------------------------------------------------------------------------
+
     // Server-side paywall enforcement — runs BEFORE any AI gateway call so
     // bypass attempts don't burn LOVABLE_API_KEY credits.
     await assertWithinFreeQuota(userId);
@@ -65,9 +86,17 @@ export const analyzeSession = createServerFn({ method: "POST" })
 
 
 
+// -----------------------------------------------------------------------------
+// Audio Retrieval
+// -----------------------------------------------------------------------------
+
     // 1) Download the audio from storage (RLS scoped to the user).
     const { data: file, error: dlErr } = await supabase.storage.from("recordings").download(data.audioPath);
     if (dlErr || !file) throw new Error(`Audio download failed: ${dlErr?.message ?? "no file"}`);
+
+// -----------------------------------------------------------------------------
+// Speech Transcription
+// -----------------------------------------------------------------------------
 
     // 2) Transcribe via Lovable AI Gateway (Gemini supports audio input).
     const audioBuf = await file.arrayBuffer();
@@ -99,6 +128,10 @@ export const analyzeSession = createServerFn({ method: "POST" })
     }
     const sttJson = await sttRes.json();
     const transcript = (sttJson?.choices?.[0]?.message?.content ?? "").trim();
+
+// -----------------------------------------------------------------------------
+// AI Feedback Evaluation
+// -----------------------------------------------------------------------------
 
     // 3) Ask Lovable AI for structured feedback via tool calling.
     // Sanitize user-controlled inputs to mitigate prompt injection — strip

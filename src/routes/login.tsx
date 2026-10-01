@@ -1,9 +1,15 @@
+// -----------------------------------------------------------------------------
+// External dependencies
+// -----------------------------------------------------------------------------
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { toast } from "sonner";
 
+// -----------------------------------------------------------------------------
+// Route Configuration
+// -----------------------------------------------------------------------------
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [

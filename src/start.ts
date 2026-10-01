@@ -1,6 +1,12 @@
+// -----------------------------------------------------------------------------
+// External dependencies
+// -----------------------------------------------------------------------------
 import { createStart, createMiddleware } from "@tanstack/react-start";
 import { setResponseHeaders } from "@tanstack/react-start/server";
 
+// -----------------------------------------------------------------------------
+// Security Headers Middleware
+// -----------------------------------------------------------------------------
 const securityHeaders = createMiddleware().server(async ({ next }) => {
   setResponseHeaders(
     new Headers({
@@ -14,6 +20,9 @@ const securityHeaders = createMiddleware().server(async ({ next }) => {
   return next();
 });
 
+// -----------------------------------------------------------------------------
+// Application Entry Point
+// -----------------------------------------------------------------------------
 export const startInstance = createStart(() => ({
   requestMiddleware: [securityHeaders],
 }));

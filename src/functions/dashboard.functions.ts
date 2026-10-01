@@ -1,8 +1,14 @@
+// -----------------------------------------------------------------------------
+// External dependencies
+// -----------------------------------------------------------------------------
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { attachSupabaseAuth } from "@/backend/auth-client-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.backend";
 
+// -----------------------------------------------------------------------------
+// Types
+// -----------------------------------------------------------------------------
 type Session = {
   id: string;
   created_at: string;
@@ -11,10 +17,16 @@ type Session = {
   status: string;
 };
 
+// -----------------------------------------------------------------------------
+// Date Helpers
+// -----------------------------------------------------------------------------
 function ymd(d: Date) {
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
 }
 
+// -----------------------------------------------------------------------------
+// Streak Calculation
+// -----------------------------------------------------------------------------
 function computeStreak(sessions: Session[]): { current: number; longest: number; lastDate: string | null } {
   const days = new Set(sessions.map((s) => ymd(new Date(s.created_at))));
   if (days.size === 0) return { current: 0, longest: 0, lastDate: null };
@@ -52,6 +64,9 @@ function computeStreak(sessions: Session[]): { current: number; longest: number;
   return { current, longest, lastDate: sorted[sorted.length - 1] };
 }
 
+// -----------------------------------------------------------------------------
+// Dashboard Stats RPC
+// -----------------------------------------------------------------------------
 export const getDashboardStats = createServerFn({ method: "POST" })
   .middleware([attachSupabaseAuth, requireSupabaseAuth])
   .handler(async ({ context }) => {

@@ -1,3 +1,6 @@
+// -----------------------------------------------------------------------------
+// External dependencies
+// -----------------------------------------------------------------------------
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useServerFn } from "@tanstack/react-start";
@@ -8,6 +11,9 @@ import { getSessionHistory } from "@/functions/history.functions";
 import { AppHeader } from "@/components/app-header";
 import { ChevronRight } from "lucide-react";
 
+// -----------------------------------------------------------------------------
+// Route Configuration
+// -----------------------------------------------------------------------------
 export const Route = createFileRoute("/history")({
   head: () => ({
     meta: [
@@ -27,6 +33,9 @@ export const Route = createFileRoute("/history")({
   component: History,
 });
 
+// -----------------------------------------------------------------------------
+// Types
+// -----------------------------------------------------------------------------
 type Row = {
   id: string;
   created_at: string;
@@ -37,6 +46,9 @@ type Row = {
   status: string;
 };
 
+// -----------------------------------------------------------------------------
+// Page Component
+// -----------------------------------------------------------------------------
 function History() {
   const { user, loading } = useAuth();
   const { t } = useI18n();
@@ -47,6 +59,9 @@ function History() {
     if (!loading && !user) nav({ to: "/login" });
   }, [user, loading, nav]);
 
+// -----------------------------------------------------------------------------
+// Data Loading
+// -----------------------------------------------------------------------------
   const { data } = useQuery({
     queryKey: ["session-history", user?.id],
     queryFn: () => fetchHistory(),
@@ -56,6 +71,9 @@ function History() {
 
   if (loading || !user) return <div className="flex min-h-dvh items-center justify-center bg-ambient">...</div>;
 
+// -----------------------------------------------------------------------------
+// Render
+// -----------------------------------------------------------------------------
   return (
     <div className="min-h-dvh bg-ambient">
       <AppHeader />

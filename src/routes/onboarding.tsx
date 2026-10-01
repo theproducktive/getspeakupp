@@ -1,3 +1,6 @@
+// -----------------------------------------------------------------------------
+// External dependencies
+// -----------------------------------------------------------------------------
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
@@ -7,6 +10,9 @@ import { useI18n } from "@/lib/i18n";
 import { Logo } from "@/components/logo";
 import { ArrowRight, Check, Globe2, Target, Sparkles } from "lucide-react";
 
+// -----------------------------------------------------------------------------
+// Route Configuration
+// -----------------------------------------------------------------------------
 export const Route = createFileRoute("/onboarding")({
   head: () => ({
     meta: [
@@ -17,6 +23,9 @@ export const Route = createFileRoute("/onboarding")({
   component: Onboarding,
 });
 
+// -----------------------------------------------------------------------------
+// Constants & Options
+// -----------------------------------------------------------------------------
 const LANGUAGES = [
   { code: "en" as const, label: "English", native: "English" },
   { code: "fr" as const, label: "French", native: "Français" },
@@ -34,6 +43,9 @@ const LEVELS = [
 
 const GOALS = [3, 5, 7];
 
+// -----------------------------------------------------------------------------
+// Page Component
+// -----------------------------------------------------------------------------
 function Onboarding() {
   const { user, loading } = useAuth();
   const { lang: uiLang } = useI18n();
@@ -49,6 +61,9 @@ function Onboarding() {
     if (!loading && !user) nav({ to: "/login" });
   }, [user, loading, nav]);
 
+// -----------------------------------------------------------------------------
+// Data Loading
+// -----------------------------------------------------------------------------
   useEffect(() => {
     if (!user) return;
     getOnboarding().then((p) => {

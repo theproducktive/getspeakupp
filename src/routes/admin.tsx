@@ -1,3 +1,6 @@
+// -----------------------------------------------------------------------------
+// External dependencies
+// -----------------------------------------------------------------------------
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -30,8 +33,14 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
+// -----------------------------------------------------------------------------
+// Types
+// -----------------------------------------------------------------------------
 type Tab = "overview" | "users" | "payments" | "subscriptions" | "sessions" | "topics" | "audit";
 
+// -----------------------------------------------------------------------------
+// Main Admin Dashboard
+// -----------------------------------------------------------------------------
 function AdminPage() {
   const { user, loading } = useAuth();
   const nav = useNavigate();
@@ -114,6 +123,9 @@ function AdminPage() {
   );
 }
 
+// -----------------------------------------------------------------------------
+// UI Helpers
+// -----------------------------------------------------------------------------
 function Card({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="rounded-3xl border border-border bg-card p-5 shadow-soft">
@@ -123,6 +135,9 @@ function Card({ label, value }: { label: string; value: string | number }) {
   );
 }
 
+// -----------------------------------------------------------------------------
+// Overview Tab
+// -----------------------------------------------------------------------------
 function OverviewTab() {
   const [data, setData] = useState<Awaited<ReturnType<typeof getAdminOverview>> | null>(null);
   useEffect(() => {
@@ -149,6 +164,9 @@ function Loading() {
   );
 }
 
+// -----------------------------------------------------------------------------
+// Users Management
+// -----------------------------------------------------------------------------
 function UsersTab() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
@@ -263,6 +281,9 @@ function UsersTab() {
   );
 }
 
+// -----------------------------------------------------------------------------
+// Payments Management
+// -----------------------------------------------------------------------------
 function PaymentsTab() {
   const [status, setStatus] = useState<"pending" | "approved" | "rejected" | "all">("pending");
   const [data, setData] = useState<Awaited<ReturnType<typeof listPaymentRequests>> | null>(null);
@@ -348,6 +369,9 @@ function PaymentsTab() {
   );
 }
 
+// -----------------------------------------------------------------------------
+// Subscriptions Management
+// -----------------------------------------------------------------------------
 function SubscriptionsTab() {
   const [status, setStatus] = useState<"active" | "pending" | "expired" | "rejected" | "all">("active");
   const [data, setData] = useState<Awaited<ReturnType<typeof listSubscriptions>> | null>(null);
@@ -437,6 +461,9 @@ function SubscriptionsTab() {
   );
 }
 
+// -----------------------------------------------------------------------------
+// Sessions Management
+// -----------------------------------------------------------------------------
 function SessionsTab() {
   const [page, setPage] = useState(0);
   const [data, setData] = useState<Awaited<ReturnType<typeof listAllSessions>> | null>(null);
@@ -486,6 +513,9 @@ function SessionsTab() {
   );
 }
 
+// -----------------------------------------------------------------------------
+// Topics Management
+// -----------------------------------------------------------------------------
 function TopicsTab() {
   const [data, setData] = useState<Awaited<ReturnType<typeof listTopics>> | null>(null);
   const [form, setForm] = useState({ id: "", language: "en" as "en" | "fr" | "ar", levelId: 1, prompt: "", category: "" });
@@ -615,6 +645,9 @@ function TopicsTab() {
   );
 }
 
+// -----------------------------------------------------------------------------
+// Audit Log
+// -----------------------------------------------------------------------------
 function AuditTab() {
   const [data, setData] = useState<Awaited<ReturnType<typeof listAuditLog>> | null>(null);
   useEffect(() => {

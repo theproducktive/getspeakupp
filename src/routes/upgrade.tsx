@@ -1,3 +1,6 @@
+// -----------------------------------------------------------------------------
+// External dependencies
+// -----------------------------------------------------------------------------
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
@@ -7,6 +10,9 @@ import { getPaypalClientId } from "@/functions/paypal-config.functions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 
+// -----------------------------------------------------------------------------
+// Constants
+// -----------------------------------------------------------------------------
 const CURRENCY_META: Record<string, { name: string; symbol: string }> = {
   USD: { name: "US Dollar", symbol: "$" },
   EUR: { name: "Euro", symbol: "€" },
@@ -30,6 +36,9 @@ const CURRENCY_META: Record<string, { name: string; symbol: string }> = {
   INR: { name: "Indian Rupee", symbol: "₹" },
 };
 
+// -----------------------------------------------------------------------------
+// Route Configuration
+// -----------------------------------------------------------------------------
 export const Route = createFileRoute("/upgrade")({
   head: () => ({
     meta: [
@@ -51,6 +60,9 @@ export const Route = createFileRoute("/upgrade")({
 
 type Price = { currency: string; amount: number; display: string; supported: string[] };
 
+// -----------------------------------------------------------------------------
+// Page Component
+// -----------------------------------------------------------------------------
 function Upgrade() {
   const { user, loading } = useAuth();
   const nav = useNavigate();
@@ -66,6 +78,9 @@ function Upgrade() {
   }, [user, loading, nav]);
 
   // Auto-redirect users who already have an active subscription
+// -----------------------------------------------------------------------------
+// Data Loading
+// -----------------------------------------------------------------------------
   useEffect(() => {
     if (!user) return;
     getUserStatus()

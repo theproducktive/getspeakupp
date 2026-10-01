@@ -1,3 +1,6 @@
+// -----------------------------------------------------------------------------
+// External dependencies
+// -----------------------------------------------------------------------------
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
@@ -6,6 +9,9 @@ import { getRankings, type RankingRow } from "@/functions/rankings.functions";
 import { Trophy, Medal, Award } from "lucide-react";
 import { AppHeader } from "@/components/app-header";
 
+// -----------------------------------------------------------------------------
+// Route Configuration
+// -----------------------------------------------------------------------------
 export const Route = createFileRoute("/rankings")({
   head: () => ({
     meta: [
@@ -16,6 +22,9 @@ export const Route = createFileRoute("/rankings")({
   component: Rankings,
 });
 
+// -----------------------------------------------------------------------------
+// Types & UI Components
+// -----------------------------------------------------------------------------
 type Range = "all" | "month" | "week";
 
 function MeRow({
@@ -25,6 +34,9 @@ function MeRow({
   rank: number;
   row: RankingRow;
 }) {
+// -----------------------------------------------------------------------------
+// Render
+// -----------------------------------------------------------------------------
   return (
     <div className="sticky bottom-4 mt-6 rounded-2xl border-2 border-terracotta bg-card p-4 shadow-elevated">
       <div className="flex items-center justify-between">
@@ -93,6 +105,9 @@ function PodiumRow({
   );
 }
 
+// -----------------------------------------------------------------------------
+// Page Component
+// -----------------------------------------------------------------------------
 function Rankings() {
   const { user, loading } = useAuth();
   const { t } = useI18n();
@@ -108,6 +123,9 @@ function Rankings() {
     if (!loading && !user) nav({ to: "/login" });
   }, [user, loading, nav]);
 
+// -----------------------------------------------------------------------------
+// Data Loading
+// -----------------------------------------------------------------------------
   useEffect(() => {
     if (!user) return;
     setBusy(true);

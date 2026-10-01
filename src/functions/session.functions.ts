@@ -1,9 +1,15 @@
+// -----------------------------------------------------------------------------
+// External dependencies
+// -----------------------------------------------------------------------------
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { attachSupabaseAuth } from "@/backend/auth-client-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.backend";
 
+// -----------------------------------------------------------------------------
+// Session Detail RPC
+// -----------------------------------------------------------------------------
 export const getSessionDetail = createServerFn({ method: "POST" })
   .middleware([attachSupabaseAuth, requireSupabaseAuth])
   .inputValidator((d) => z.object({ sessionId: z.string().uuid() }).parse(d))

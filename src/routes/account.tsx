@@ -1,3 +1,6 @@
+// -----------------------------------------------------------------------------
+// External dependencies
+// -----------------------------------------------------------------------------
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
@@ -5,6 +8,9 @@ import { getMySubscription } from "@/functions/account.functions";
 import { Crown, Settings2, ArrowRight } from "lucide-react";
 import { AppHeader } from "@/components/app-header";
 
+// -----------------------------------------------------------------------------
+// Route Configuration
+// -----------------------------------------------------------------------------
 export const Route = createFileRoute("/account")({
   head: () => ({
     meta: [
@@ -24,8 +30,14 @@ export const Route = createFileRoute("/account")({
   component: Account,
 });
 
+// -----------------------------------------------------------------------------
+// Types
+// -----------------------------------------------------------------------------
 type Sub = Awaited<ReturnType<typeof getMySubscription>>["subscription"];
 
+// -----------------------------------------------------------------------------
+// Page Component
+// -----------------------------------------------------------------------------
 function Account() {
   const { user, loading } = useAuth();
   const nav = useNavigate();
@@ -36,6 +48,9 @@ function Account() {
     if (!loading && !user) nav({ to: "/login" });
   }, [user, loading, nav]);
 
+// -----------------------------------------------------------------------------
+// Data Loading
+// -----------------------------------------------------------------------------
   useEffect(() => {
     if (!user) return;
     getMySubscription()
@@ -48,10 +63,16 @@ function Account() {
     return <div className="flex min-h-dvh items-center justify-center bg-ambient">...</div>;
   }
 
+// -----------------------------------------------------------------------------
+// Derived State
+// -----------------------------------------------------------------------------
   const isActive = sub?.status === "active";
   const formattedDate = (iso: string | null | undefined) =>
     iso ? new Date(iso).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" }) : "—";
 
+// -----------------------------------------------------------------------------
+// Render
+// -----------------------------------------------------------------------------
   return (
     <div className="min-h-dvh bg-ambient">
       <AppHeader hasActive={isActive} />
@@ -134,6 +155,9 @@ function Account() {
   );
 }
 
+// -----------------------------------------------------------------------------
+// UI Helpers
+// -----------------------------------------------------------------------------
 function Row({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
     <div className="flex items-start justify-between gap-4 border-b border-border/50 pb-3 last:border-0">

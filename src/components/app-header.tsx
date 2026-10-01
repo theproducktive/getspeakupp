@@ -1,3 +1,6 @@
+// -----------------------------------------------------------------------------
+// External dependencies
+// -----------------------------------------------------------------------------
 import { Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { Menu, X, Sparkles, Shield } from "lucide-react";
@@ -5,6 +8,9 @@ import { Logo } from "@/components/logo";
 import { useAuth } from "@/lib/auth-context";
 import { useI18n } from "@/lib/i18n";
 
+// -----------------------------------------------------------------------------
+// Types
+// -----------------------------------------------------------------------------
 type Props = {
   /** Show the "Pro" badge (or "Upgrade" pill) — pass undefined to hide entirely */
   hasActive?: boolean;
@@ -17,6 +23,9 @@ type Props = {
  * - Desktop: inline links
  * - Mobile (<md): hamburger that opens a slide-down sheet
  */
+// -----------------------------------------------------------------------------
+// Header Component
+// -----------------------------------------------------------------------------
 export function AppHeader({ hasActive, isAdmin = false }: Props) {
   const { signOut, user } = useAuth();
   const { t } = useI18n();
@@ -27,13 +36,19 @@ export function AppHeader({ hasActive, isAdmin = false }: Props) {
     if (!open) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    return () => {
+  // -----------------------------------------------------------------------------
+// Render
+// -----------------------------------------------------------------------------
+  return () => {
       document.body.style.overflow = prev;
     };
   }, [open]);
 
   const close = () => setOpen(false);
 
+// -----------------------------------------------------------------------------
+// Pro/Upgrade Badge
+// -----------------------------------------------------------------------------
   const ProPill =
     hasActive === undefined ? null : hasActive ? (
       <Link
@@ -162,6 +177,9 @@ export function AppHeader({ hasActive, isAdmin = false }: Props) {
   );
 }
 
+// -----------------------------------------------------------------------------
+// Mobile Navigation Link
+// -----------------------------------------------------------------------------
 function MobileLink({
   to,
   children,

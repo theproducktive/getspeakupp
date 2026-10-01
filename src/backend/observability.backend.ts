@@ -3,8 +3,14 @@
 // SDK (@sentry/react) plus structured server logs are enough until a Worker-
 // compatible Sentry transport is wired.
 
+// -----------------------------------------------------------------------------
+// Types
+// -----------------------------------------------------------------------------
 export type CaptureContext = Record<string, string | number | boolean | undefined>;
 
+// -----------------------------------------------------------------------------
+// Server Error Capture
+// -----------------------------------------------------------------------------
 export function captureServerException(err: unknown, ctx: CaptureContext = {}): void {
   const sentryDsn = process.env.SENTRY_DSN;
   const message = err instanceof Error ? err.message : String(err);
@@ -21,6 +27,9 @@ export function captureServerException(err: unknown, ctx: CaptureContext = {}): 
     }),
   );
 
+// -----------------------------------------------------------------------------
+// Sentry HTTP Envelope
+// -----------------------------------------------------------------------------
   if (!sentryDsn) return;
 
   // Best-effort fire-and-forget to Sentry's HTTP envelope endpoint. Works in the

@@ -1,8 +1,14 @@
+// -----------------------------------------------------------------------------
+// External dependencies
+// -----------------------------------------------------------------------------
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { attachSupabaseAuth } from "@/backend/auth-client-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.backend";
 
+// -----------------------------------------------------------------------------
+// Session History RPC
+// -----------------------------------------------------------------------------
 export const getSessionHistory = createServerFn({ method: "POST" })
   .middleware([attachSupabaseAuth, requireSupabaseAuth])
   .handler(async ({ context }) => {

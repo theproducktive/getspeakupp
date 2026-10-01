@@ -1,3 +1,6 @@
+// -----------------------------------------------------------------------------
+// External dependencies
+// -----------------------------------------------------------------------------
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -11,6 +14,9 @@ const SaveSchema = z.object({
   interests: z.array(z.string().min(1).max(40)).max(20),
 });
 
+// -----------------------------------------------------------------------------
+// Get Onboarding RPC
+// -----------------------------------------------------------------------------
 export const getOnboarding = createServerFn({ method: "POST" })
   .middleware([attachSupabaseAuth, requireSupabaseAuth])
   .handler(async ({ context }) => {
@@ -30,6 +36,9 @@ export const getOnboarding = createServerFn({ method: "POST" })
     };
   });
 
+// -----------------------------------------------------------------------------
+// Save Onboarding RPC
+// -----------------------------------------------------------------------------
 export const saveOnboarding = createServerFn({ method: "POST" })
   .middleware([attachSupabaseAuth, requireSupabaseAuth])
   .inputValidator((data: unknown) => SaveSchema.parse(data))

@@ -1,3 +1,6 @@
+// -----------------------------------------------------------------------------
+// External dependencies
+// -----------------------------------------------------------------------------
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
@@ -5,6 +8,9 @@ import { getSessionDetail } from "@/functions/session.functions";
 import { AppHeader } from "@/components/app-header";
 import { ArrowLeft, Sparkles, Mic, BookOpen, MessageSquare } from "lucide-react";
 
+// -----------------------------------------------------------------------------
+// Route Configuration
+// -----------------------------------------------------------------------------
 export const Route = createFileRoute("/session/$id")({
   head: () => ({
     meta: [
@@ -24,10 +30,16 @@ export const Route = createFileRoute("/session/$id")({
   component: SessionDetail,
 });
 
+// -----------------------------------------------------------------------------
+// Types & Constants
+// -----------------------------------------------------------------------------
 type Detail = Awaited<ReturnType<typeof getSessionDetail>>;
 
 const LANG_LABEL: Record<string, string> = { en: "English", fr: "French", ar: "Arabic" };
 
+// -----------------------------------------------------------------------------
+// Page Component
+// -----------------------------------------------------------------------------
 function SessionDetail() {
   const { id } = Route.useParams();
   const { user, loading } = useAuth();
@@ -39,6 +51,9 @@ function SessionDetail() {
     if (!loading && !user) nav({ to: "/login" });
   }, [user, loading, nav]);
 
+// -----------------------------------------------------------------------------
+// Data Loading
+// -----------------------------------------------------------------------------
   useEffect(() => {
     if (!user) return;
     getSessionDetail({ data: { sessionId: id } })

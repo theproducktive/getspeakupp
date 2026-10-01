@@ -1,3 +1,6 @@
+// -----------------------------------------------------------------------------
+// External dependencies
+// -----------------------------------------------------------------------------
 // Server function: generates a personalized practice topic from the user's interests.
 // Uses a DB cache keyed by (lang, level, interests_hash) to cut AI cost & latency.
 import { createServerFn } from "@tanstack/react-start";
@@ -9,12 +12,18 @@ import { interestsHash, CACHE_MIN_BEFORE_REUSE, CACHE_TARGET_POOL } from "@/lib/
 import { captureServerException } from "@/backend/observability.backend";
 import { assertWithinFreeQuota } from "@/backend/quota.backend";
 
+// -----------------------------------------------------------------------------
+// Input Validation
+// -----------------------------------------------------------------------------
 const InputSchema = z.object({
   language: z.enum(["en", "fr", "ar"]),
   interests: z.array(z.string().min(1).max(40)).min(1).max(10),
   level: z.enum(["A1", "A2", "B1", "B2", "C1", "C2"]).optional(),
 });
 
+// -----------------------------------------------------------------------------
+// Configuration
+// -----------------------------------------------------------------------------
 const LEVEL_HINT: Record<string, string> = {
   A1: "Use only the most common everyday words and very short, simple sentences (CEFR A1 beginner).",
   A2: "Use simple, common vocabulary and short sentences suitable for an elementary learner (CEFR A2).",
@@ -26,6 +35,9 @@ const LEVEL_HINT: Record<string, string> = {
 
 const LANG_NAME: Record<string, string> = { en: "English", fr: "French", ar: "Arabic" };
 
+// -----------------------------------------------------------------------------
+// AI Gateway Call
+// -----------------------------------------------------------------------------
 async function callGateway(language: "en" | "fr" | "ar", interests: string[], level?: string): Promise<string> {
   const lovableKey = process.env.LOVABLE_API_KEY;
   if (!lovableKey) throw new Error("LOVABLE_API_KEY not configured");
@@ -70,6 +82,9 @@ async function callGateway(language: "en" | "fr" | "ar", interests: string[], le
   return prompt;
 }
 
+// -----------------------------------------------------------------------------
+// Topic Generation RPC
+// -----------------------------------------------------------------------------
 export const generateTopic = createServerFn({ method: "POST" })
   .middleware([attachSupabaseAuth, requireSupabaseAuth])
   .inputValidator((data: unknown) => InputSchema.parse(data))
@@ -156,6 +171,10 @@ export const generateTopic = createServerFn({ method: "POST" })
       prompt = pool[Math.floor(Math.random() * pool.length)].prompt;
       cacheHit = true;
     }
+
+// -----------------------------------------------------------------------------
+// Cache Generation
+// -----------------------------------------------------------------------------
 
     // 2) Cache miss — generate via Lovable AI Gateway and persist.
     if (!prompt) {

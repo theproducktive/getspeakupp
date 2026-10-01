@@ -1,3 +1,6 @@
+// -----------------------------------------------------------------------------
+// External dependencies
+// -----------------------------------------------------------------------------
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeaders } from "@tanstack/react-start/server";
 import { z } from "zod";
@@ -13,6 +16,9 @@ import {
   SUPPORTED_CURRENCIES,
 } from "@/backend/paypal.backend";
 
+// -----------------------------------------------------------------------------
+// Local Price Detection
+// -----------------------------------------------------------------------------
 // Detect user's currency based on IP, with optional override
 export const getLocalPrice = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) =>
@@ -34,6 +40,9 @@ export const getLocalPrice = createServerFn({ method: "POST" })
     return { ...price, country, supported: SUPPORTED_CURRENCIES };
   });
 
+// -----------------------------------------------------------------------------
+// User Status
+// -----------------------------------------------------------------------------
 // Returns session count + active subscription status
 export const getUserStatus = createServerFn({ method: "POST" })
   .middleware([attachSupabaseAuth, requireSupabaseAuth])
@@ -52,6 +61,9 @@ export const getUserStatus = createServerFn({ method: "POST" })
     return { sessionCount: count ?? 0, hasActive: (subs?.length ?? 0) > 0 };
   });
 
+// -----------------------------------------------------------------------------
+// Order Creation
+// -----------------------------------------------------------------------------
 export const createPaypalOrder = createServerFn({ method: "POST" })
   .middleware([attachSupabaseAuth, requireSupabaseAuth])
   .inputValidator((data: unknown) =>
@@ -82,6 +94,9 @@ export const createPaypalOrder = createServerFn({ method: "POST" })
     }
   });
 
+// -----------------------------------------------------------------------------
+// Order Capture & Subscription Activation
+// -----------------------------------------------------------------------------
 export const capturePaypalOrder = createServerFn({ method: "POST" })
   .middleware([attachSupabaseAuth, requireSupabaseAuth])
   .inputValidator((data: unknown) =>

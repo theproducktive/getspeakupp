@@ -1,3 +1,6 @@
+// -----------------------------------------------------------------------------
+// External dependencies
+// -----------------------------------------------------------------------------
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
@@ -6,6 +9,9 @@ import { getDashboardStats } from "@/functions/dashboard.functions";
 import { Flame, History, Trophy, Sparkles, ArrowRight, Target } from "lucide-react";
 import { AppHeader } from "@/components/app-header";
 
+// -----------------------------------------------------------------------------
+// Route Configuration
+// -----------------------------------------------------------------------------
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
@@ -25,10 +31,16 @@ export const Route = createFileRoute("/dashboard")({
   component: Dashboard,
 });
 
+// -----------------------------------------------------------------------------
+// Types & Constants
+// -----------------------------------------------------------------------------
 type Stats = Awaited<ReturnType<typeof getDashboardStats>>;
 
 const LANG_LABEL: Record<string, string> = { en: "English", fr: "French", ar: "Arabic" };
 
+// -----------------------------------------------------------------------------
+// Page Component
+// -----------------------------------------------------------------------------
 function Dashboard() {
   const { user, loading } = useAuth();
   const { t } = useI18n();
@@ -39,6 +51,9 @@ function Dashboard() {
     if (!loading && !user) nav({ to: "/login" });
   }, [user, loading, nav]);
 
+// -----------------------------------------------------------------------------
+// Data Loading
+// -----------------------------------------------------------------------------
   useEffect(() => {
     if (!user) return;
     getDashboardStats()
@@ -64,6 +79,9 @@ function Dashboard() {
     user.email?.split("@")[0] ||
     "there";
 
+// -----------------------------------------------------------------------------
+// Render
+// -----------------------------------------------------------------------------
   return (
     <div className="min-h-dvh bg-ambient">
       <AppHeader hasActive={stats?.hasActive} />
